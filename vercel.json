@@ -1,16 +1,5 @@
 {
   "version": 2,
-  "public": true,
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "server/src/server.ts"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "client/$1"
-    }
-  ],
   "builds": [
     {
       "src": "server/src/server.ts",
@@ -19,7 +8,21 @@
     {
       "src": "client/package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
+      "config": {
+        "distDir": "dist",
+        "installCommand": "npm install",
+        "buildCommand": "npm run build"
+      }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/server/src/server.ts"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/client/$1"
     }
   ]
 }
