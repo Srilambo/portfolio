@@ -12,7 +12,7 @@ export async function fetchGithubData(username: string): Promise<GitHubData> {
   const cached = cacheGet<GitHubData>(cacheKey);
   if (cached) return cached;
 
-  const headers: HeadersInit = { 'User-Agent': 'portfolio-app' };
+  const headers: Record<string, string> = { 'User-Agent': 'portfolio-app' };
   if (process.env.GITHUB_TOKEN) headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
 
   const [userRes, reposRes] = await Promise.all([
