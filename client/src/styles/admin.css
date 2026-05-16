@@ -1,0 +1,22 @@
+/* Admin-only styles — white theme override */
+.admin-layout {
+  font-family: 'Inter', sans-serif;
+  background: #f9fafb;
+  min-height: 100vh;
+  color: #111827;
+}
+
+/* Override global dark scrollbar in admin */
+.admin-layout ::-webkit-scrollbar { width: 6px; }
+.admin-layout ::-webkit-scrollbar-track { background: #f9fafb; }
+.admin-layout ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+.admin-layout ::-webkit-scrollbar-thumb:hover { background: #00f5ff; }
+
+/* Admin table hover rows */
+.admin-table tr:hover td { background: #f9fafb; }
+
+/* Admin input focus */
+.admin-input:focus {
+  border-color: #00f5ff;
+  box-shadow: 0 0 0 3px rgba(0, 245, 255, 0.15);
+}

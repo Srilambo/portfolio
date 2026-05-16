@@ -1,0 +1,59 @@
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import PrivateRoute from './components/PrivateRoute';
+import PortfolioPage from './pages/PortfolioPage';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
+import ProjectsAdmin from './pages/ProjectsAdmin';
+import SkillsAdmin from './pages/SkillsAdmin';
+import ExperienceAdmin from './pages/ExperienceAdmin';
+import MessagesAdmin from './pages/MessagesAdmin';
+import SettingsAdmin from './pages/SettingsAdmin';
+
+function DashboardHome() {
+  return (
+    <div>
+      <h2 style={{ margin: '0 0 1.5rem', fontSize: '1.3rem', fontWeight: 800, color: '#111827' }}>Welcome back 👋</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: '1rem' }}>
+        {[
+          { icon: '🗂️', label: 'Projects',   to: '/admin/projects' },
+          { icon: '⚡', label: 'Skills',     to: '/admin/skills' },
+          { icon: '💼', label: 'Experience', to: '/admin/experience' },
+          { icon: '✉️', label: 'Messages',   to: '/admin/messages' },
+          { icon: '⚙️', label: 'Settings',   to: '/admin/settings' },
+        ].map(card => (
+          <a key={card.label} href={'#' + card.to}
+            style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.5rem', textDecoration: 'none', color: '#111827', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 700, transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+          >
+            <span style={{ fontSize: '1.75rem' }}>{card.icon}</span>
+            {card.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<PortfolioPage />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route element={<PrivateRoute />}>
+            <Route element={<AdminDashboard />}>
+              <Route path="/admin/dashboard"   element={<DashboardHome />} />
+              <Route path="/admin/projects"    element={<ProjectsAdmin />} />
+              <Route path="/admin/skills"      element={<SkillsAdmin />} />
+              <Route path="/admin/experience"  element={<ExperienceAdmin />} />
+              <Route path="/admin/messages"    element={<MessagesAdmin />} />
+              <Route path="/admin/settings"    element={<SettingsAdmin />} />
+            </Route>
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </HashRouter>
+    </AuthProvider>
+  );
+}
