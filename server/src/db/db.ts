@@ -15,7 +15,7 @@ export async function connectDB(): Promise<void> {
     console.log(`✅ MongoDB connected: ${MONGODB_URI.split('@').pop() ?? MONGODB_URI}`);
   } catch (err) {
     console.error('❌ MongoDB connection failed:', err);
-    process.exit(1);
+    // Removed process.exit(1) to prevent Vercel function crashes
   }
 
   mongoose.connection.on('disconnected', () => {
