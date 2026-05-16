@@ -26,7 +26,7 @@ export default function Experience({ experience }: { experience: ExperienceType[
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
           {experience.map((item, i) => (
-            <TimelineItem key={i} item={item} index={i} />
+            <TimelineItem key={i} exp={item} index={i} />
           ))}
         </div>
       </div>

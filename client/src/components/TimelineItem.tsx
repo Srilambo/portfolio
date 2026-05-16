@@ -41,6 +41,8 @@ export default function TimelineItem({ exp, index }: Props) {
 }
 
 function ExpCard({ exp }: { exp: Experience }) {
+  if (!exp) return null;
+
   return (
     <div style={{
       background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
@@ -52,19 +54,19 @@ function ExpCard({ exp }: { exp: Experience }) {
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: 8 }}>
         <div>
-          <h3 style={{ color: '#f0f0f0', fontWeight: 800, fontSize: '1.05rem', margin: 0 }}>{exp.company}</h3>
-          <p style={{ color: '#00f5ff', fontWeight: 600, fontSize: '0.9rem', margin: 0 }}>{exp.role}</p>
+          <h3 style={{ color: '#f0f0f0', fontWeight: 800, fontSize: '1.05rem', margin: 0 }}>{exp.company || 'Company'}</h3>
+          <p style={{ color: '#00f5ff', fontWeight: 600, fontSize: '0.9rem', margin: 0 }}>{exp.role || 'Role'}</p>
         </div>
         <span style={{
           background: 'rgba(121,40,202,0.2)', border: '1px solid rgba(121,40,202,0.4)',
           color: '#c084fc', fontSize: '0.75rem', fontWeight: 600,
           padding: '0.2rem 0.75rem', borderRadius: 99, whiteSpace: 'nowrap',
         }}>
-          {exp.period}
+          {exp.period || 'Present'}
         </span>
       </div>
       <ul style={{ margin: 0, padding: '0 0 0 1.2rem', display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {exp.bullets.map((b, i) => (
+        {(exp.bullets || []).map((b, i) => (
           <li key={i} style={{ color: '#9ca3af', fontSize: '0.875rem', lineHeight: 1.6 }}>{b}</li>
         ))}
       </ul>
