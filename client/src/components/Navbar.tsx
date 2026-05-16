@@ -22,7 +22,7 @@ export default function Navbar() {
     }}>
       <div className="section-wrapper" style={{ padding: '0 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-          STE<span style={{ color: 'var(--accent)' }}>FAN.</span>
+          RAAVA<span style={{ color: 'var(--accent)' }}>NAA.</span>
         </div>
 
         <div style={{ display: 'flex', gap: '3rem' }}>
