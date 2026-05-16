@@ -24,8 +24,12 @@ router.get('/', async (_req, res) => {
       skills,
       experience
     });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch public data' });
+  } catch (err: any) {
+    console.error('Data fetch error:', err);
+    res.status(500).json({ 
+      error: 'Failed to fetch public data',
+      details: err.message || 'Unknown error'
+    });
   }
 });
 
