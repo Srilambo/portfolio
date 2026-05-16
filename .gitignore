@@ -1,11 +1,30 @@
-# .gitignore
+# Dependency directories
 node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build outputs
 dist/
+client/dist/
+server/dist/
+
+# Environment files
 .env
+client/.env
+server/.env
+
+# Logs and system files
 *.log
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-coverage/
-.turbo/
+
+# OS metadata
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
