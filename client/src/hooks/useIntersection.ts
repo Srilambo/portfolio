@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 
 export function useIntersection(
-  threshold = 0.2,
-  once = true
+  options: number | { threshold?: number; once?: boolean } = 0.2,
+  onceArg = true
 ): [React.RefObject<HTMLDivElement | null>, boolean] {
+  const threshold = typeof options === 'number' ? options : options.threshold ?? 0.2;
+  const once = typeof options === 'number' ? onceArg : options.once ?? true;
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
