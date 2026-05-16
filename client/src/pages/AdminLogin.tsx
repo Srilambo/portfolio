@@ -12,34 +12,37 @@ export default function AdminLogin() {
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
 
-  // Handle GitHub Callback
+  // Handle OAuth Callbacks
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
+    const state = urlParams.get('state');
     if (code) {
-      handleGithubCallback(code);
+      handleOAuthCallback(code, state);
     }
   }, []);
 
-  const handleGithubCallback = async (code: string) => {
+  const handleOAuthCallback = async (code: string, state: string | null) => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(getApiUrl('/api/auth/github/callback'), {
+      const provider = state === 'google' ? 'google' : 'github';
+      const endpoint = `/api/auth/${provider}/callback`;
+      
+      const res = await fetch(getApiUrl(endpoint), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code }),
       });
       if (!res.ok) {
         const d = await res.json();
-        throw new Error(d.error || 'GitHub Auth failed');
+        throw new Error(d.error || `${provider} Auth failed`);
       }
       const { token } = await res.json();
       login(token);
       navigate('/admin/dashboard', { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'GitHub Login failed');
-      // Clean up URL
+      setError(err instanceof Error ? err.message : 'Login failed');
       window.history.replaceState({}, document.title, window.location.pathname);
     } finally {
       setLoading(false);
@@ -48,6 +51,10 @@ export default function AdminLogin() {
 
   const handleGithubLogin = () => {
     window.location.href = getApiUrl('/api/auth/github');
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = getApiUrl('/api/auth/google');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,6 +134,28 @@ export default function AdminLogin() {
             <span style={{ padding: '0 0.75rem', fontSize: '0.75rem', color: '#9ca3af', fontWeight: 600 }}>OR</span>
             <div style={{ flex: 1, height: 1, background: '#e5e7eb' }}></div>
           </div>
+
+          <button type="button" onClick={handleGoogleLogin} disabled={loading}
+            style={{
+              padding: '0.8rem', borderRadius: 8, border: '1px solid #e5e7eb',
+              background: '#fff',
+              color: '#111827', fontWeight: 600, fontSize: '0.95rem',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              fontFamily: 'Inter, sans-serif', transition: 'all 0.2s',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+              marginBottom: '0.75rem'
+            }}
+            onMouseOver={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = '#d1d5db'; }}
+            onMouseOut={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#e5e7eb'; }}
+          >
+            <svg height="20" width="20" viewBox="0 0 48 48">
+              <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+              <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+              <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+              <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C40.483,35.58,44,30.222,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+            </svg>
+            Continue with Google
+          </button>
 
           <button type="button" onClick={handleGithubLogin} disabled={loading}
             style={{
