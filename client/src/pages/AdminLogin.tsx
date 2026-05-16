@@ -13,11 +13,7 @@ export default function AdminLogin() {
 
   // Handle OAuth Callbacks
   useEffect(() => {
-    // For HashRouter, query params might be in the hash: #/admin/login?code=...
-    const hash = window.location.hash;
-    const searchPart = hash.includes('?') ? hash.split('?')[1] : window.location.search;
-    const urlParams = new URLSearchParams(searchPart);
-    
+    const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
     const state = urlParams.get('state');
     

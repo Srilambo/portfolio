@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
 import PortfolioPage from './pages/PortfolioPage';
@@ -22,12 +22,12 @@ function DashboardHome() {
           { icon: '✉️', label: 'Messages',   to: '/admin/messages' },
           { icon: '⚙️', label: 'Settings',   to: '/admin/settings' },
         ].map(card => (
-          <a key={card.label} href={'#' + card.to}
+          <Link key={card.label} to={card.to}
             style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.5rem', textDecoration: 'none', color: '#111827', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 700, transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
           >
             <span style={{ fontSize: '1.75rem' }}>{card.icon}</span>
             {card.label}
-          </a>
+          </Link>
         ))}
       </div>
     </div>
@@ -37,7 +37,7 @@ function DashboardHome() {
 export default function App() {
   return (
     <AuthProvider>
-      <HashRouter>
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<PortfolioPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -53,7 +53,7 @@ export default function App() {
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </HashRouter>
+      </BrowserRouter>
     </AuthProvider>
   );
 }
