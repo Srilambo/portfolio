@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import { Setting, DataStore } from '../db/schema.js';
+import { connectDB } from '../db/db.js';
 
 const router = Router();
 
 async function getData(key: string): Promise<unknown> {
+  await connectDB();
   const doc = await DataStore.findOne({ key }).lean();
   return doc ? JSON.parse(doc.value) : null;
 }
@@ -11,6 +13,7 @@ async function getData(key: string): Promise<unknown> {
 // GET /api/data — public viewer gets everything in one go
 router.get('/', async (_req, res) => {
   try {
+    await connectDB();
     const settingsRows = await Setting.find().lean();
     const settings = Object.fromEntries(settingsRows.map(r => [r.key, r.value]));
 
