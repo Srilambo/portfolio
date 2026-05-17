@@ -3,14 +3,27 @@ import { useAdminApi } from '../hooks/useAdminApi';
 import ImagePicker from '../components/ImagePicker';
 
 interface Settings {
-  name: string; title: string; bio: string; avatarUrl: string;
-  phone: string; whatsapp: string; email: string;
-  facebook: string; instagram: string; tiktok: string; linkedin: string; youtube: string; github: string;
-  metaTitle: string; metaDescription: string;
+  name: string;
+  nickname?: string;
+  title: string;
+  bio: string;
+  avatarUrl: string;
+  phone: string;
+  whatsapp: string;
+  email: string;
+  facebook: string;
+  instagram: string;
+  tiktok: string;
+  linkedin: string;
+  youtube: string;
+  github: string;
+  metaTitle: string;
+  metaDescription: string;
 }
 
 const DEFAULT: Settings = {
   name: 'Ananthkumar Srilambotharasarma', 
+  nickname: 'Srilambo',
   title: 'Fullstack Developer', 
   bio: 'Building scalable web apps from pixel to production.',
   avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800', 
@@ -71,7 +84,10 @@ export default function SettingsAdmin() {
           <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.5rem' }}>
             <h3 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: 700, color: '#111827', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem' }}>Personal Info</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <Field label="Full Name" k="name" />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <Field label="Full Name" k="name" />
+                <Field label="Nickname / Style Name" k="nickname" />
+              </div>
               <Field label="Title / Role" k="title" />
               <Field label="Bio" k="bio" type="textarea" />
               <ImagePicker label="Avatar / Profile Image URL" value={settings.avatarUrl || ''} onChange={val => set('avatarUrl', val)} />

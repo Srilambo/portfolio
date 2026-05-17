@@ -157,11 +157,50 @@ body::after {
 .responsive-grid-3 {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 2.5rem;
+  align-items: center;
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .responsive-grid-3 {
+    grid-template-columns: 1.2fr 1fr;
+  }
 }
 @media (min-width: 1024px) {
   .responsive-grid-3 {
-    grid-template-columns: 1.2fr 1fr 0.8fr;
+    grid-template-columns: 1.2fr 1.1fr 0.7fr;
+  }
+}
+
+.hero-stats-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  gap: 1.5rem;
+  width: 100%;
+  margin-top: 2rem;
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hero-stats-wrapper {
+    grid-column: 1 / -1;
+    margin-top: 3rem;
+  }
+}
+@media (min-width: 1024px) {
+  .hero-stats-wrapper {
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 3rem;
+    margin-top: 0;
+  }
+}
+
+.hero-stat-item {
+  text-align: center;
+  flex: 1;
+}
+@media (min-width: 1024px) {
+  .hero-stat-item {
+    text-align: right;
   }
 }
 

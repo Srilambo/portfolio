@@ -46,14 +46,28 @@ export default function Hero({ settings }: { settings: any }) {
             {role}
           </span>
           <h1 style={{ 
-            fontSize: 'clamp(3rem, 8vw, 5rem)', 
+            fontSize: 'clamp(3.5rem, 8vw, 5.5rem)', 
             fontWeight: 900, 
-            margin: '1rem 0', 
+            margin: '1rem 0 0.25rem', 
             lineHeight: 1,
-            color: 'var(--text-primary)' 
+            color: 'var(--text-primary)',
+            background: 'var(--gradient)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
           }}>
-            {name}
+            {settings?.nickname || name}
           </h1>
+          {settings?.nickname && (
+            <p style={{
+              fontSize: 'clamp(1.1rem, 2.5vw, 1.4rem)',
+              fontWeight: 700,
+              color: 'var(--text-secondary)',
+              margin: '0 0 1.5rem',
+              letterSpacing: '0.03em'
+            }}>
+              {name}
+            </p>
+          )}
           <div style={{ width: 80, height: 4, background: 'var(--gradient)', marginBottom: '2rem' }} />
           <p style={{ 
             color: 'var(--text-secondary)', 
@@ -131,10 +145,10 @@ export default function Hero({ settings }: { settings: any }) {
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}
+          className="hero-stats-wrapper"
         >
           {stats.map((s, i) => (
-            <div key={i} style={{ textAlign: 'right' }}>
+            <div key={i} className="hero-stat-item">
               <div style={{ 
                 fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', 
                 fontWeight: 900, 
