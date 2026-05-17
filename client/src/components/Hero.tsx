@@ -1,6 +1,20 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import ParticleCanvas from './ParticleCanvas';
+
+function AnimatedCounter({ value }: { value: string }) {
+  const numericValue = parseInt(value.replace(/[^0-9]/g, '')) || 0;
+  const suffix = value.replace(/[0-9]/g, '');
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, Math.round);
+
+  useEffect(() => {
+    const animation = animate(count, numericValue, { duration: 2.5, ease: "easeOut" });
+    return animation.stop;
+  }, [numericValue]);
+
+  return <><motion.span>{rounded}</motion.span>{suffix}</>;
+}
 
 const techIcons = [
   {
@@ -128,10 +142,14 @@ export default function Hero({ settings }: { settings: any }) {
   const role = settings?.title || settings?.role || 'Fullstack Developer';
 
   const stats = [
-    { label: 'Experience', value: '3+' },
-    { label: 'Projects', value: '220+' },
-    { label: 'Clients', value: '60+' },
+    { label: 'Experience', value: settings?.statsExperience || '3+' },
+    { label: 'Projects', value: settings?.statsProjects || '220+' },
+    { label: 'Clients', value: settings?.statsClients || '60+' },
   ];
+
+  const platforms = settings?.freelancePlatforms 
+    ? settings.freelancePlatforms.split(',').map((s: string) => s.trim()).filter(Boolean)
+    : ['Behance', 'Dribbble', 'Upwork', 'Fiverr'];
 
   return (
     <section id="hero" style={{ 
@@ -395,7 +413,7 @@ export default function Hero({ settings }: { settings: any }) {
                 color: 'var(--text-primary)',
                 lineHeight: 1
               }}>
-                {s.value}
+                <AnimatedCounter value={s.value} />
               </div>
               <div style={{ 
                 color: 'var(--text-secondary)', 
@@ -416,16 +434,18 @@ export default function Hero({ settings }: { settings: any }) {
       {/* Social Links Bar */}
       <div style={{ 
         position: 'absolute', 
-        bottom: '5rem', 
+        bottom: '3rem', 
         width: '100%', 
         display: 'flex', 
+        flexWrap: 'wrap',
         justifyContent: 'center',
-        gap: '4rem',
+        gap: 'clamp(1.5rem, 4vw, 4rem)',
         opacity: 0.5,
         filter: 'grayscale(1)',
-        pointerEvents: 'none'
+        pointerEvents: 'none',
+        padding: '0 1.5rem'
       }}>
-        {['Behance', 'Dribbble', 'Upwork', 'Fiverr'].map(brand => (
+        {platforms.map((brand: string) => (
           <span key={brand} style={{ fontSize: '1.2rem', fontWeight: 700, color: 'white' }}>{brand}</span>
         ))}
       </div>

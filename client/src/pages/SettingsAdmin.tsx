@@ -21,6 +21,10 @@ interface Settings {
   metaDescription: string;
   cvUrl?: string;
   aboutImageUrl?: string;
+  statsExperience?: string;
+  statsProjects?: string;
+  statsClients?: string;
+  freelancePlatforms?: string;
 }
 
 const DEFAULT: Settings = {
@@ -41,6 +45,10 @@ const DEFAULT: Settings = {
   metaTitle: 'Srilambo | Fullstack Developer Portfolio',
   metaDescription: 'React, Node.js, Three.js. Building scalable web apps from pixel to production.',
   cvUrl: '',
+  statsExperience: '3+',
+  statsProjects: '220+',
+  statsClients: '60+',
+  freelancePlatforms: 'Behance, Dribbble, Upwork, Fiverr',
 };
 
 export default function SettingsAdmin() {
@@ -102,6 +110,19 @@ export default function SettingsAdmin() {
                 <ImagePicker label="Avatar / Hero Image URL" value={settings.avatarUrl || ''} onChange={val => set('avatarUrl', val)} />
                 <ImagePicker label="About Section Image URL" value={settings.aboutImageUrl || ''} onChange={val => set('aboutImageUrl', val)} />
               </div>
+            </div>
+          </div>
+
+          {/* Hero Stats */}
+          <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.5rem' }}>
+            <h3 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: 700, color: '#111827', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem' }}>Hero Stats & Brands</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                <Field label="Experience (e.g. 3+)" k="statsExperience" />
+                <Field label="Projects (e.g. 220+)" k="statsProjects" />
+                <Field label="Clients (e.g. 60+)" k="statsClients" />
+              </div>
+              <Field label="Freelance Platforms (comma separated)" k="freelancePlatforms" />
             </div>
           </div>
 
