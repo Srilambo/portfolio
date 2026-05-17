@@ -31,7 +31,7 @@ export interface ISetting extends Document {
 
 const SettingSchema = new Schema<ISetting>({
   key:   { type: String, required: true, unique: true },
-  value: { type: String, required: true },
+  value: { type: String, default: '' },
 });
 
 export const Setting: Model<ISetting> = model<ISetting>('Setting', SettingSchema);

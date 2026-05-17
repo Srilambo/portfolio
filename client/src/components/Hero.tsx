@@ -4,7 +4,7 @@ import ParticleCanvas from './ParticleCanvas';
 export default function Hero({ settings }: { settings: any }) {
   const name = settings?.name || 'SriLambo';
   const bio  = settings?.bio || 'I build scalable web apps from pixel to production.';
-  const role = settings?.role || 'Fullstack Developer';
+  const role = settings?.title || settings?.role || 'Fullstack Developer';
 
   const stats = [
     { label: 'Experience', value: '3+' },

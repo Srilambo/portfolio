@@ -58,10 +58,15 @@ export default function SettingsAdmin() {
 
   const save = async () => {
     setSaving(true);
-    await request('/api/admin/settings', { method: 'PUT', body: JSON.stringify(settings) }).catch(() => {});
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    try {
+      await request('/api/admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err: any) {
+      alert(err.message || 'Failed to save settings');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const inp = { width: '100%', padding: '0.65rem 0.9rem', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: '0.9rem', fontFamily: 'Inter, sans-serif', boxSizing: 'border-box' as const, outline: 'none' };
