@@ -20,6 +20,7 @@ interface Settings {
   metaTitle: string;
   metaDescription: string;
   cvUrl?: string;
+  aboutImageUrl?: string;
 }
 
 const DEFAULT: Settings = {
