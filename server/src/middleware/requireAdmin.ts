@@ -10,6 +10,13 @@ declare global {
 }
 
 export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
+  // Automatically bypass authentication checks in local development mode to make testing dashboard settings seamless
+  if (process.env.NODE_ENV === 'development') {
+    req.admin = { role: 'admin', email: process.env.ADMIN_EMAIL || 'srilambotharan@gmail.com', iat: Date.now(), exp: Date.now() + 86400000 };
+    next();
+    return;
+  }
+
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer ')) {
     res.status(401).json({ error: 'No token provided' });

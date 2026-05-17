@@ -19,18 +19,24 @@ export default function ImagePicker({ value, onChange, label }: Props) {
 
   const [qualityMode, setQualityMode] = useState<'standard' | '4k'>('4k');
 
+  // AI Background removal states
+  const isProfilePicker = label.toLowerCase().includes('avatar') || label.toLowerCase().includes('profile');
+  const [autoRemoveBg, setAutoRemoveBg] = useState(isProfilePicker);
+  const [processing, setProcessing] = useState(false);
+  const [progressMsg, setProgressMsg] = useState('');
+
   // Client-side canvas compression to keep Base64 size highly optimized
-  const compressAndSetImage = (fileOrBlob: File | Blob) => {
+  const compressAndSetImage = (fileOrBlob: File | Blob, format: 'image/jpeg' | 'image/png' = 'image/jpeg') => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
         
-        // Determine resolution limit and JPEG compression quality factor
+        // Determine resolution limit and quality parameters
         const is4k = qualityMode === '4k';
-        const MAX_WIDTH = is4k ? 2560 : 600;
-        const MAX_HEIGHT = is4k ? 2560 : 600;
+        const MAX_WIDTH = is4k ? 2048 : 600;
+        const MAX_HEIGHT = is4k ? 2048 : 600;
         const compressionQuality = is4k ? 0.85 : 0.75;
         
         let width = img.width;
@@ -63,7 +69,7 @@ export default function ImagePicker({ value, onChange, label }: Props) {
         ctx.drawImage(img, 0, 0, width, height);
         
         // Compress using custom resolution parameters
-        const compressedBase64 = canvas.toDataURL('image/jpeg', compressionQuality);
+        const compressedBase64 = canvas.toDataURL(format, format === 'image/jpeg' ? compressionQuality : undefined);
         onChange(compressedBase64);
       };
       img.onerror = () => {
@@ -77,10 +83,45 @@ export default function ImagePicker({ value, onChange, label }: Props) {
     reader.readAsDataURL(fileOrBlob);
   };
 
+  // Main coordinator to process image with optional background removal
+  const processImage = async (fileOrBlob: File | Blob) => {
+    setErrorMessage('');
+    
+    if (autoRemoveBg) {
+      setProcessing(true);
+      setProgressMsg('Waking up AI model...');
+      try {
+        // Dynamically import to keep main bundle fast
+        const { removeBackground } = await import('@imgly/background-removal');
+        setProgressMsg('AI is analyzing person...');
+        const transparentBlob = await removeBackground(fileOrBlob, {
+          progress: (state, progress) => {
+            const pct = (progress * 100).toFixed(0);
+            if (state === 'fetch') {
+              setProgressMsg(`Downloading AI model... ${pct}%`);
+            } else if (state === 'compute') {
+              setProgressMsg(`Extracting person in 3D... ${pct}%`);
+            }
+          }
+        });
+        setProgressMsg('Optimizing transparent PNG...');
+        compressAndSetImage(transparentBlob, 'image/png');
+      } catch (err) {
+        console.error(err);
+        setErrorMessage('AI Background removal failed. Saving original image.');
+        compressAndSetImage(fileOrBlob, 'image/jpeg');
+      } finally {
+        setProcessing(false);
+      }
+    } else {
+      compressAndSetImage(fileOrBlob, 'image/jpeg');
+    }
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      compressAndSetImage(file);
+      processImage(file);
       setModalOpen(false);
     }
   };
@@ -125,7 +166,7 @@ export default function ImagePicker({ value, onChange, label }: Props) {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         canvas.toBlob((blob) => {
           if (blob) {
-            compressAndSetImage(blob);
+            processImage(blob);
             stopCamera();
             setModalOpen(false);
           }
@@ -134,11 +175,30 @@ export default function ImagePicker({ value, onChange, label }: Props) {
     }
   };
 
-  const handleUrlSubmit = () => {
+  const handleUrlSubmit = async () => {
     if (tempUrl.trim()) {
-      onChange(tempUrl.trim());
-      setModalOpen(false);
-      setUrlInputActive(false);
+      const url = tempUrl.trim();
+      if (autoRemoveBg && url.startsWith('http')) {
+        setProcessing(true);
+        setProgressMsg('Fetching image from address...');
+        try {
+          const res = await fetch(url);
+          const blob = await res.blob();
+          await processImage(blob);
+        } catch (err) {
+          console.error(err);
+          setErrorMessage('Failed to fetch image for background removal due to security (CORS) limits. Using original URL.');
+          onChange(url);
+        } finally {
+          setProcessing(false);
+          setModalOpen(false);
+          setUrlInputActive(false);
+        }
+      } else {
+        onChange(url);
+        setModalOpen(false);
+        setUrlInputActive(false);
+      }
     }
   };
 
@@ -268,6 +328,38 @@ export default function ImagePicker({ value, onChange, label }: Props) {
 
             {!cameraActive ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {/* AI Background removal toggle */}
+                <div style={{
+                  background: 'rgba(56, 189, 248, 0.08)',
+                  border: '1px solid rgba(56, 189, 248, 0.25)',
+                  borderRadius: 12,
+                  padding: '0.85rem 1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '0.25rem'
+                }}>
+                  <div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#0369a1', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span>✨ AI Background Remover</span>
+                      <span style={{ fontSize: '0.65rem', background: '#38bdf8', color: '#fff', padding: '1px 5px', borderRadius: 4, textTransform: 'uppercase', fontWeight: 900 }}>3D Effect</span>
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: '#0284c7', marginTop: 2, fontFamily: 'Inter, sans-serif' }}>
+                      Automatically isolate the person on upload
+                    </div>
+                  </div>
+                  <input 
+                    type="checkbox"
+                    checked={autoRemoveBg}
+                    onChange={e => setAutoRemoveBg(e.target.checked)}
+                    style={{
+                      width: 18,
+                      height: 18,
+                      accentColor: '#38bdf8',
+                      cursor: 'pointer'
+                    }}
+                  />
+                </div>
                 {/* Premium Quality Selector */}
                 <div style={{
                   background: '#f8fafc',
@@ -530,6 +622,51 @@ export default function ImagePicker({ value, onChange, label }: Props) {
                     📸 Take Photo
                   </button>
                 </div>
+              </div>
+            )}
+
+            {/* Custom Keyframe Animations */}
+            <style dangerouslySetInnerHTML={{__html: `
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+              @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+              }
+              @keyframes pulse-ring {
+                0% { opacity: 0.4; transform: scale(0.95); }
+                50% { opacity: 1; transform: scale(1.05); }
+                100% { opacity: 0.4; transform: scale(0.95); }
+              }
+            `}} />
+
+            {/* AI Processing Overlay */}
+            {processing && (
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'rgba(255, 255, 255, 0.95)',
+                borderRadius: 20,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 16,
+                zIndex: 10000,
+                animation: 'fadeIn 0.2s ease-out'
+              }}>
+                <div style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: '50%',
+                  border: '4px solid #e2e8f0',
+                  borderTop: '4px solid #38bdf8',
+                  animation: 'spin 0.8s linear infinite'
+                }} />
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '1rem', fontFamily: 'Inter, sans-serif' }}>Processing Image...</div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>{progressMsg}</div>
               </div>
             )}
           </div>
