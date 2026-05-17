@@ -21,6 +21,7 @@ router.get('/', async (_req, res) => {
     const skills     = await getData('skills')     ?? [];
     const experience = await getData('experience') ?? [];
     const blogs      = await getData('blogs')      ?? [];
+    const services   = await getData('services')   ?? [];
 
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.setHeader('Pragma', 'no-cache');
@@ -31,7 +32,8 @@ router.get('/', async (_req, res) => {
       projects,
       skills,
       experience,
-      blogs
+      blogs,
+      services
     });
   } catch (err: any) {
     console.error('Data fetch error:', err);

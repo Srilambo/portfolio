@@ -1,14 +1,10 @@
 import { motion } from 'framer-motion';
 import { useIntersection } from '../hooks/useIntersection';
 
-export default function Services({ settings }: { settings: any }) {
+export default function Services({ settings, services = [] }: { settings: any; services?: any[] }) {
   const [ref, isVisible] = useIntersection(0.1);
 
-  const services = [
-    { title: 'Website Design', count: '50+ Projects', icon: '🎨' },
-    { title: 'Mobile Apps Design', count: '20+ Projects', icon: '📱' },
-    { title: 'Brand Identity', count: '15+ Projects', icon: '💎' },
-  ];
+  if (!services || services.length === 0) return null;
 
   return (
     <section id="services" ref={ref} className="section-wrapper">

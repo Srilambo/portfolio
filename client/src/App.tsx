@@ -7,6 +7,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import ProjectsAdmin from './pages/ProjectsAdmin';
 import SkillsAdmin from './pages/SkillsAdmin';
 import ExperienceAdmin from './pages/ExperienceAdmin';
+import ServicesAdmin from './pages/ServicesAdmin';
 import MessagesAdmin from './pages/MessagesAdmin';
 import SettingsAdmin from './pages/SettingsAdmin';
 import BlogsAdmin from './pages/BlogsAdmin';
@@ -49,6 +50,7 @@ export default function App() {
               <Route path="/admin/projects"    element={<ProjectsAdmin />} />
               <Route path="/admin/skills"      element={<SkillsAdmin />} />
               <Route path="/admin/experience"  element={<ExperienceAdmin />} />
+              <Route path="/admin/services"    element={<ServicesAdmin />} />
               <Route path="/admin/blogs"       element={<BlogsAdmin />} />
               <Route path="/admin/messages"    element={<MessagesAdmin />} />
               <Route path="/admin/settings"    element={<SettingsAdmin />} />

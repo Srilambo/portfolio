@@ -70,7 +70,7 @@ export default function PortfolioPage() {
     );
   }
 
-  const { settings = {}, projects = [], skills = [], experience = [], blogs = [] } = data || {};
+  const { settings = {}, projects = [], skills = [], experience = [], blogs = [], services = [] } = data || {};
 
   return (
     <>
@@ -84,7 +84,7 @@ export default function PortfolioPage() {
           <main>
             <Hero settings={settings} />
             <About settings={settings} />
-            <Services settings={settings} />
+            <Services settings={settings} services={services} />
             <Skills skills={skills} />
             <Projects projects={projects} />
             <Experience experience={experience} />
