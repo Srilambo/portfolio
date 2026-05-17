@@ -214,30 +214,7 @@ export default function Hero({ settings }: { settings: any }) {
             {bio}
           </p>
           
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <button style={{ 
-              background: 'var(--gradient)', 
-              color: 'var(--bg)', 
-              padding: '1rem 2.5rem', 
-              borderRadius: 12, 
-              border: 'none', 
-              fontWeight: 800, 
-              cursor: 'pointer' 
-            }}>
-              Hire Me
-            </button>
-            <button style={{ 
-              background: 'transparent', 
-              color: 'var(--text-primary)', 
-              padding: '1rem 2rem', 
-              borderRadius: 12, 
-              border: '1px solid var(--border-glass)', 
-              fontWeight: 700, 
-              cursor: 'pointer' 
-            }}>
-              My Work
-            </button>
-          </div>
+
         </motion.div>
 
         {/* Center: Image with Orbiting Tech Stack */}
