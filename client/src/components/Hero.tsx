@@ -147,17 +147,6 @@ export default function Hero({ settings }: { settings: any }) {
     ? settings.freelancePlatforms.split(',').map((s: string) => s.trim()).filter(Boolean)
     : ['Behance', 'Dribbble', 'Upwork', 'Fiverr'];
 
-  const socials = [
-    { name: 'Facebook', url: settings?.facebook },
-    { name: 'Instagram', url: settings?.instagram },
-    { name: 'TikTok', url: settings?.tiktok },
-    { name: 'LinkedIn', url: settings?.linkedin },
-    { name: 'YouTube', url: settings?.youtube },
-    { name: 'Email', url: settings?.email ? `mailto:${settings.email}` : undefined },
-    { name: 'GitHub', url: settings?.github },
-    { name: 'WhatsApp', url: settings?.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/\D/g, '')}` : undefined },
-  ].filter(s => !!s.url);
-
   return (
     <section id="hero" style={{ 
       position: 'relative', 
@@ -225,49 +214,29 @@ export default function Hero({ settings }: { settings: any }) {
             {bio}
           </p>
           
-          <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            {socials.map(s => {
-              const data = SOCIAL_ICONS[s.name];
-              if (!data) return null;
-              return (
-                <a 
-                  key={s.name} 
-                  href={s.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  title={s.name}
-                  style={{ 
-                    color: 'var(--text-secondary)', 
-                    textDecoration: 'none',
-                    transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    background: 'rgba(255,255,255,0.02)',
-                    padding: '14px',
-                    borderRadius: '50%',
-                    border: '1px solid rgba(255,255,255,0.05)'
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'scale(1.15) translateY(-4px)';
-                    e.currentTarget.style.color = '#fff';
-                    e.currentTarget.style.background = data.brandColor;
-                    e.currentTarget.style.borderColor = data.brandColor;
-                    e.currentTarget.style.boxShadow = `0 10px 25px ${data.brandColor}66`;
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.color = 'var(--text-secondary)';
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  {data.icon}
-                </a>
-              );
-            })}
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <button style={{ 
+              background: 'var(--gradient)', 
+              color: 'var(--bg)', 
+              padding: '1rem 2.5rem', 
+              borderRadius: 12, 
+              border: 'none', 
+              fontWeight: 800, 
+              cursor: 'pointer' 
+            }}>
+              Hire Me
+            </button>
+            <button style={{ 
+              background: 'transparent', 
+              color: 'var(--text-primary)', 
+              padding: '1rem 2rem', 
+              borderRadius: 12, 
+              border: '1px solid var(--border-glass)', 
+              fontWeight: 700, 
+              cursor: 'pointer' 
+            }}>
+              My Work
+            </button>
           </div>
         </motion.div>
 
@@ -446,15 +415,56 @@ export default function Hero({ settings }: { settings: any }) {
         display: 'flex', 
         flexWrap: 'wrap',
         justifyContent: 'center',
-        gap: 'clamp(1.5rem, 4vw, 4rem)',
-        opacity: 0.5,
-        filter: 'grayscale(1)',
-        pointerEvents: 'none',
-        padding: '0 1.5rem'
+        gap: 'clamp(1.5rem, 4vw, 3rem)',
+        padding: '0 1.5rem',
+        zIndex: 50
       }}>
-        {platforms.map((brand: string) => (
-          <span key={brand} style={{ fontSize: '1.2rem', fontWeight: 700, color: 'white' }}>{brand}</span>
-        ))}
+        {[
+          { name: 'GitHub', url: settings?.github },
+          { name: 'LinkedIn', url: settings?.linkedin },
+          { name: 'Facebook', url: settings?.facebook },
+          { name: 'Instagram', url: settings?.instagram },
+          { name: 'TikTok', url: settings?.tiktok },
+          { name: 'YouTube', url: settings?.youtube },
+          { name: 'Email', url: settings?.email ? `mailto:${settings.email}` : undefined },
+          { name: 'WhatsApp', url: settings?.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/\D/g, '')}` : undefined },
+        ].filter(s => !!s.url).map(s => {
+          const data = SOCIAL_ICONS[s.name];
+          if (!data) return null;
+          return (
+            <a 
+              key={s.name} 
+              href={s.url} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              title={s.name}
+              style={{ 
+                color: 'var(--text-secondary)', 
+                textDecoration: 'none',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                opacity: 0.6
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'scale(1.3) translateY(-4px)';
+                e.currentTarget.style.color = data.brandColor;
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.filter = `drop-shadow(0 0 12px ${data.brandColor})`;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.color = 'var(--text-secondary)';
+                e.currentTarget.style.opacity = '0.6';
+                e.currentTarget.style.filter = 'none';
+              }}
+            >
+              {data.icon}
+            </a>
+          );
+        })}
       </div>
     </section>
   );
