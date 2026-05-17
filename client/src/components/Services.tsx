@@ -4,8 +4,6 @@ import { useIntersection } from '../hooks/useIntersection';
 export default function Services({ settings, services = [] }: { settings: any; services?: any[] }) {
   const [ref, isVisible] = useIntersection(0.1);
 
-  if (!services || services.length === 0) return null;
-
   return (
     <section id="services" ref={ref} className="section-wrapper">
       <div className="responsive-grid-2" style={{ alignItems: 'center' }}>
