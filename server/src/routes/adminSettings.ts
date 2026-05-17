@@ -10,6 +10,11 @@ router.get('/', async (_req, res) => {
   try {
     const rows = await Setting.find().lean();
     const obj = Object.fromEntries(rows.map(r => [r.key, r.value]));
+    
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    
     res.json(obj);
   } catch {
     res.status(500).json({ error: 'Failed to fetch settings' });

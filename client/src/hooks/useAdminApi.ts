@@ -8,7 +8,14 @@ export function useAdminApi() {
 
   const request = useCallback(
     async <T>(path: string, options: RequestInit = {}): Promise<T> => {
-      const res = await fetch(getApiUrl(path), {
+      const method = options.method || 'GET';
+      let url = getApiUrl(path);
+      if (method.toUpperCase() === 'GET') {
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}t=${Date.now()}`;
+      }
+
+      const res = await fetch(url, {
         ...options,
         headers: {
           'Content-Type': 'application/json',

@@ -22,7 +22,7 @@ export default function PortfolioPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(getApiUrl('/api/data'));
+        const res = await fetch(getApiUrl(`/api/data?t=${Date.now()}`));
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));
           throw new Error(errorData.details || errorData.error || `HTTP Error: ${res.status}`);
