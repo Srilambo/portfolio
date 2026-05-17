@@ -228,7 +228,7 @@ export default function Blogs({ blogs }: { blogs: Blog[] }) {
 
               {/* Cover image */}
               {activeBlog.image && (
-                <div style={{ width: '100%', aspectRatio: '16/9', maxHeight: 450, borderRadius: 16, overflow: 'hidden', border: '1px solid var(--border-glass)' }}>
+                <div style={{ width: '100%', aspectRatio: '4/3', maxHeight: 600, borderRadius: 16, overflow: 'hidden', border: '1px solid var(--border-glass)' }}>
                   <img src={activeBlog.image} alt={activeBlog.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               )}
