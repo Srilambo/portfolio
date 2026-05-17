@@ -200,7 +200,7 @@ export default function Hero({ settings }: { settings: any }) {
             {bio}
           </p>
           
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <button style={{ 
               background: 'var(--gradient)', 
               color: 'var(--bg)', 

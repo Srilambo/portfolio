@@ -56,7 +56,7 @@ export default function SkillSphere({ skills }: SkillSphereProps) {
 
   return (
     <div style={{ width: '100%', height: 400 }}>
-      <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
+      <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
         <ambientLight intensity={0.6} />
         <pointLight position={[10, 10, 10]} color="#38bdf8" intensity={1} />
         <SphereLabels labels={labels} />
