@@ -14,7 +14,7 @@ if (window.location.hash) {
   }
 }
 
-document.title = "Raavanaa | Portfolio";
+document.title = "Srilambo | Portfolio";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

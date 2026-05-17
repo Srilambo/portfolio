@@ -52,10 +52,19 @@ function ExpCard({ exp }: { exp: Experience }) {
       onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.transform = 'translateY(-4px)'; el.style.boxShadow = '0 0 24px rgba(0,245,255,0.12)'; }}
       onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.transform = 'translateY(0)'; el.style.boxShadow = 'none'; }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: 8 }}>
-        <div>
-          <h3 style={{ color: '#f0f0f0', fontWeight: 800, fontSize: '1.05rem', margin: 0 }}>{exp.company || 'Company'}</h3>
-          <p style={{ color: '#00f5ff', fontWeight: 600, fontSize: '0.9rem', margin: 0 }}>{exp.role || 'Role'}</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {exp.logo && (
+            <img 
+              src={exp.logo} 
+              alt={exp.company} 
+              style={{ width: 40, height: 40, borderRadius: 8, objectFit: 'cover', border: '1px solid rgba(255,255,255,0.15)' }} 
+            />
+          )}
+          <div>
+            <h3 style={{ color: '#f0f0f0', fontWeight: 800, fontSize: '1.05rem', margin: 0 }}>{exp.company || 'Company'}</h3>
+            <p style={{ color: '#00f5ff', fontWeight: 600, fontSize: '0.9rem', margin: 0 }}>{exp.role || 'Role'}</p>
+          </div>
         </div>
         <span style={{
           background: 'rgba(121,40,202,0.2)', border: '1px solid rgba(121,40,202,0.4)',

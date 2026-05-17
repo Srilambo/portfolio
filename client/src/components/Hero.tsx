@@ -109,7 +109,7 @@ export default function Hero({ settings }: { settings: any }) {
             zIndex: 2
           }}>
             <img 
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800" 
+              src={settings?.avatarUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800"} 
               alt={name}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />

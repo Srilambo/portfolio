@@ -29,10 +29,10 @@ export default function AdminSidebar() {
     }}>
       {/* Brand */}
       <div style={{ padding: '2.5rem 2rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #38bdf8, #818cf8)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, color: '#020617' }}>R</div>
+        <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #38bdf8, #818cf8)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, color: '#020617' }}>S</div>
         <div>
-          <div style={{ fontWeight: 800, fontSize: '1rem', color: '#f8fafc', letterSpacing: '-0.02em' }}>RAAVANAA</div>
-          <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Studio Admin</div>
+          <div style={{ fontWeight: 800, fontSize: '1rem', color: '#f8fafc', letterSpacing: '-0.02em' }}>SRILAMBO</div>
+          <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Portfolio Admin</div>
         </div>
       </div>
 

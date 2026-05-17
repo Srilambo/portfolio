@@ -7,9 +7,9 @@ export default function Contact({ settings }: { settings: any }) {
   const { form, state: { loading, success, error }, handleChange, handleSubmit } = useContactForm();
 
   const info = [
-    { icon: '📧', label: 'Email', value: settings?.email || 'hello@raavanaa.lk' },
-    { icon: '📍', label: 'Location', value: settings?.location || 'Colombo, Sri Lanka' },
-    { icon: '🤝', label: 'Availability', value: 'Open to Work', badge: true },
+    { icon: '📧', label: 'Email', value: settings?.email || 'srilambotharan@gmail.com' },
+    { icon: '📞', label: 'Mobile No', value: settings?.phone || 'Not Specified' },
+    { icon: '💬', label: 'WhatsApp', value: settings?.whatsapp || 'Not Specified' },
   ];
 
   return (

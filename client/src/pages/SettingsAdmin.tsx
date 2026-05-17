@@ -3,14 +3,26 @@ import { useAdminApi } from '../hooks/useAdminApi';
 
 interface Settings {
   name: string; title: string; bio: string; avatarUrl: string;
-  github: string; linkedin: string; twitter: string;
+  phone: string; whatsapp: string; email: string;
+  facebook: string; instagram: string; tiktok: string; linkedin: string; youtube: string; github: string;
   metaTitle: string; metaDescription: string;
 }
 
 const DEFAULT: Settings = {
-  name: 'Raavanaa', title: 'Fullstack Developer', bio: 'Building scalable web apps from pixel to production.',
-  avatarUrl: '', github: 'https://github.com/raavanaa', linkedin: 'https://linkedin.com/in/raavanaa',
-  twitter: 'https://twitter.com/raavanaa', metaTitle: 'Raavanaa | Fullstack Developer Portfolio',
+  name: 'Ananthkumar Srilambotharasarma', 
+  title: 'Fullstack Developer', 
+  bio: 'Building scalable web apps from pixel to production.',
+  avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800', 
+  phone: '', 
+  whatsapp: '', 
+  email: 'srilambotharan@gmail.com',
+  facebook: '', 
+  instagram: '', 
+  tiktok: '', 
+  linkedin: 'https://linkedin.com/in/srilambo', 
+  youtube: '', 
+  github: 'https://github.com/srilambo', 
+  metaTitle: 'Srilambo | Fullstack Developer Portfolio',
   metaDescription: 'React, Node.js, Three.js. Building scalable web apps from pixel to production.',
 };
 
@@ -42,16 +54,16 @@ export default function SettingsAdmin() {
     <div>
       <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#374151', marginBottom: 4 }}>{label}</label>
       {type === 'textarea'
-        ? <textarea rows={3} value={settings[k]} onChange={e => set(k, e.target.value)} style={{ ...inp, resize: 'vertical' }} />
-        : <input type={type} value={settings[k]} onChange={e => set(k, e.target.value)} style={inp} />}
+        ? <textarea rows={3} value={settings[k] || ''} onChange={e => set(k, e.target.value)} style={{ ...inp, resize: 'vertical' }} />
+        : <input type={type} value={settings[k] || ''} onChange={e => set(k, e.target.value)} style={inp} />}
     </div>
   );
 
   return (
-    <div style={{ maxWidth: 900 }}>
+    <div style={{ maxWidth: 1000 }}>
       <h2 style={{ margin: '0 0 2rem', fontSize: '1.3rem', fontWeight: 800, color: '#111827' }}>Settings</h2>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '2rem', alignItems: 'start' }}>
         {/* Left: form */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {/* Personal info */}
@@ -61,17 +73,30 @@ export default function SettingsAdmin() {
               <Field label="Full Name" k="name" />
               <Field label="Title / Role" k="title" />
               <Field label="Bio" k="bio" type="textarea" />
-              <Field label="Avatar URL" k="avatarUrl" type="url" />
+              <Field label="Avatar / Profile Image URL" k="avatarUrl" type="url" />
+            </div>
+          </div>
+
+          {/* Contact details */}
+          <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.5rem' }}>
+            <h3 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: 700, color: '#111827', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem' }}>Contact Details</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <Field label="Mobile No" k="phone" type="tel" />
+              <Field label="WhatsApp No / Link" k="whatsapp" />
+              <Field label="Email Address" k="email" type="email" />
             </div>
           </div>
 
           {/* Social links */}
           <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.5rem' }}>
             <h3 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: 700, color: '#111827', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem' }}>Social Links</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <Field label="GitHub URL" k="github" type="url" />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+              <Field label="Facebook URL" k="facebook" type="url" />
+              <Field label="Instagram URL" k="instagram" type="url" />
+              <Field label="TikTok URL" k="tiktok" type="url" />
               <Field label="LinkedIn URL" k="linkedin" type="url" />
-              <Field label="Twitter URL" k="twitter" type="url" />
+              <Field label="YouTube URL" k="youtube" type="url" />
+              <Field label="GitHub URL" k="github" type="url" />
             </div>
           </div>
 
@@ -92,14 +117,29 @@ export default function SettingsAdmin() {
 
         {/* Right: live preview */}
         <div style={{ position: 'sticky', top: '1.5rem' }}>
-          <div style={{ background: '#050816', borderRadius: 16, padding: '2rem', color: '#f0f0f0' }}>
-            <p style={{ color: '#00f5ff', fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Hi, I'm</p>
-            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, margin: '0 0 0.5rem', background: 'linear-gradient(135deg,#00f5ff,#7928ca)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              {settings.name || 'Your Name'}
-            </h2>
-            <p style={{ color: '#d1d5db', fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>{settings.title || 'Your Title'}</p>
-            <p style={{ color: '#9ca3af', fontSize: '0.875rem', lineHeight: 1.7 }}>{settings.bio || 'Your bio...'}</p>
-            <div style={{ marginTop: '1.25rem', padding: '0.75rem', borderRadius: 8, background: 'rgba(0,245,255,0.08)', border: '1px solid rgba(0,245,255,0.2)', fontSize: '0.75rem', color: '#00f5ff' }}>
+          <div style={{ background: '#050816', borderRadius: 16, padding: '2rem', color: '#f0f0f0', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div>
+              <p style={{ color: '#00f5ff', fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Hi, I'm</p>
+              <h2 style={{ fontSize: '2.2rem', fontWeight: 900, margin: '0 0 0.5rem', background: 'linear-gradient(135deg,#00f5ff,#7928ca)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                {settings.name || 'Your Name'}
+              </h2>
+              <p style={{ color: '#d1d5db', fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>{settings.title || 'Your Title'}</p>
+              <p style={{ color: '#9ca3af', fontSize: '0.875rem', lineHeight: 1.7 }}>{settings.bio || 'Your bio...'}</p>
+            </div>
+
+            {settings.avatarUrl && (
+              <div style={{ width: '100%', aspectRatio: '1.5', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <img src={settings.avatarUrl} alt="Avatar Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8rem', color: '#9ca3af' }}>
+              {settings.email && <div>✉️ {settings.email}</div>}
+              {settings.phone && <div>📞 {settings.phone}</div>}
+              {settings.whatsapp && <div>💬 {settings.whatsapp}</div>}
+            </div>
+
+            <div style={{ padding: '0.75rem', borderRadius: 8, background: 'rgba(0,245,255,0.08)', border: '1px solid rgba(0,245,255,0.2)', fontSize: '0.75rem', color: '#00f5ff' }}>
               🔍 SEO: {settings.metaTitle || settings.name}
             </div>
           </div>

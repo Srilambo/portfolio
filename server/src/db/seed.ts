@@ -5,13 +5,21 @@ import { Setting, DataStore } from './schema.js';
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/portfolio';
 
 const DEMO_SETTINGS = [
-  { key: 'name', value: 'Raavanaa' },
+  { key: 'name', value: 'Ananthkumar Srilambotharasarma' },
   { key: 'role', value: 'Fullstack Developer & 3D Web Enthusiast' },
   { key: 'bio', value: 'I specialize in building high-performance, visually stunning web applications. From interactive 3D interfaces to robust backend architectures, I turn complex ideas into seamless digital experiences.' },
-  { key: 'github', value: 'https://github.com/raavanaa' },
-  { key: 'linkedin', value: 'https://linkedin.com/' },
-  { key: 'twitter', value: 'https://twitter.com/' },
-  { key: 'email', value: 'hello@raavanaa.lk' },
+  { key: 'avatarUrl', value: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800' },
+  { key: 'phone', value: '' },
+  { key: 'whatsapp', value: '' },
+  { key: 'email', value: 'srilambotharan@gmail.com' },
+  { key: 'facebook', value: '' },
+  { key: 'instagram', value: '' },
+  { key: 'tiktok', value: '' },
+  { key: 'linkedin', value: 'https://linkedin.com/in/srilambo' },
+  { key: 'youtube', value: '' },
+  { key: 'github', value: 'https://github.com/srilambo' },
+  { key: 'metaTitle', value: 'Srilambo | Fullstack Developer Portfolio' },
+  { key: 'metaDescription', value: 'React, Node.js, Three.js. Building scalable web apps from pixel to production.' },
 ];
 
 const DEMO_PROJECTS = [
