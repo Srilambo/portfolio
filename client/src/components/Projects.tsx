@@ -43,7 +43,7 @@ export default function Projects({ projects }: { projects: Project[] }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '2rem' }}>
         {filtered.map((project, i) => (
-          <ProjectCard3D key={project.id || i} project={project} index={i} />
+          <ProjectCard3D key={project.id || i} project={project} />
         ))}
       </div>
     </section>

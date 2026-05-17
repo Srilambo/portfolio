@@ -2,13 +2,18 @@ import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
 import * as THREE from 'three';
+import type { Skill } from '../types';
 
 const TECH_LABELS = [
   'React','Node.js','TypeScript','Three.js','PostgreSQL',
   'Docker','Redis','GraphQL','AWS','Tailwind','Next.js','Git',
 ];
 
-function SphereLabels() {
+interface SkillSphereProps {
+  skills?: Skill[];
+}
+
+function SphereLabels({ labels }: { labels: string[] }) {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
@@ -17,9 +22,9 @@ function SphereLabels() {
 
   return (
     <group ref={groupRef}>
-      {TECH_LABELS.map((label, i) => {
-        const phi   = Math.acos(-1 + (2 * i) / TECH_LABELS.length);
-        const theta = Math.sqrt(TECH_LABELS.length * Math.PI) * phi;
+      {labels.map((label, i) => {
+        const phi   = Math.acos(-1 + (2 * i) / labels.length);
+        const theta = Math.sqrt(labels.length * Math.PI) * phi;
         const r     = 2.4;
         const x     = r * Math.sin(phi) * Math.cos(theta);
         const y     = r * Math.cos(phi);
@@ -44,13 +49,17 @@ function SphereLabels() {
   );
 }
 
-export default function SkillSphere() {
+export default function SkillSphere({ skills }: SkillSphereProps) {
+  const labels = skills && skills.length > 0
+    ? skills.map(s => s.name)
+    : TECH_LABELS;
+
   return (
     <div style={{ width: '100%', height: 400 }}>
       <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
         <ambientLight intensity={0.6} />
         <pointLight position={[10, 10, 10]} color="#38bdf8" intensity={1} />
-        <SphereLabels />
+        <SphereLabels labels={labels} />
       </Canvas>
     </div>
   );

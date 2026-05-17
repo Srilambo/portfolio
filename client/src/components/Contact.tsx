@@ -4,7 +4,7 @@ import { useContactForm } from '../hooks/useContactForm';
 
 export default function Contact({ settings }: { settings: any }) {
   const [ref, isVisible] = useIntersection({ threshold: 0.1 });
-  const { form, loading, success, error, handleChange, handleSubmit } = useContactForm();
+  const { form, state: { loading, success, error }, handleChange, handleSubmit } = useContactForm();
 
   const info = [
     { icon: '📧', label: 'Email', value: settings?.email || 'hello@raavanaa.lk' },
@@ -19,7 +19,7 @@ export default function Contact({ settings }: { settings: any }) {
         <p style={{ color: 'var(--text-secondary)', marginTop: '1rem' }}>Have a project in mind? Let's build something amazing together.</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', lg: '1fr 1.2fr', gap: '4rem' }}>
+      <div className="contact-grid">
         {/* Info Side */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}

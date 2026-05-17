@@ -175,3 +175,25 @@ body::after {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+}
+@media (min-width: 1024px) {
+  .contact-grid {
+    grid-template-columns: 1fr 1.2fr;
+  }
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+}
+@media (min-width: 1024px) {
+  .skills-grid {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useMessages } from '../hooks/useMessages';
 import MessagePanel from '../components/MessagePanel';
 import ConfirmModal from '../components/ConfirmModal';
