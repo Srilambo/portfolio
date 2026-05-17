@@ -356,10 +356,8 @@ export default function Hero({ settings }: { settings: any }) {
                         className="orbit-icon"
                         style={{ 
                           '--glow-color': `${tech.glow}99`,
-                          borderColor: isClicked ? `${tech.glow}` : `${tech.glow}26`,
-                          boxShadow: isClicked 
-                            ? `0 0 30px ${tech.glow}, 0 0 60px ${tech.glow}aa` 
-                            : `0 0 15px ${tech.glow}33`
+                          borderColor: `${tech.glow}26`,
+                          boxShadow: `0 0 15px ${tech.glow}33`
                         } as any}
                       >
                         {tech.svg}

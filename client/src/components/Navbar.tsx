@@ -26,8 +26,11 @@ export default function Navbar() {
         <div className="section-wrapper" style={{ padding: '0 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: 1200, margin: '0 auto' }}>
           
           {/* Logo */}
-          <div style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-            SRILAM<span style={{ color: 'var(--accent)' }}>BO.</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', zIndex: 1001 }}>
+            <img src="/logo.png" alt="Srilambo Logo" style={{ width: 42, height: 42, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 4px 15px rgba(56, 189, 248, 0.3)' }} />
+            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+              SRILAM<span style={{ color: 'var(--accent)' }}>BO.</span>
+            </div>
           </div>
 
           {/* Desktop Nav */}

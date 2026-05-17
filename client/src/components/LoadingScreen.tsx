@@ -39,22 +39,35 @@ export default function LoadingScreen({ isApiLoading = false }: { isApiLoading?:
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             style={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              flexDirection: 'column',
+              gap: '1.5rem'
+            }}
+          >
+            <motion.img 
+              src="/logo.png" 
+              alt="Srilambo Logo" 
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.8, type: 'spring' }}
+              style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 10px 30px rgba(56, 189, 248, 0.4)' }}
+            />
+            <div style={{
               fontSize: 'clamp(2.5rem, 8vw, 4rem)', 
               fontWeight: 900, 
               color: '#f8fafc', 
               letterSpacing: '-0.02em', 
-              display: 'flex', 
-              alignItems: 'center' 
-            }}
-          >
-            SRILAM
-            <motion.span 
-              initial={{ color: '#f8fafc' }}
-              animate={{ color: '#38bdf8' }}
-              transition={{ delay: 0.8, duration: 0.5 }}
-            >
-              BO.
-            </motion.span>
+            }}>
+              SRILAM
+              <motion.span 
+                initial={{ color: '#f8fafc' }}
+                animate={{ color: '#38bdf8' }}
+                transition={{ delay: 1.1, duration: 0.5 }}
+              >
+                BO.
+              </motion.span>
+            </div>
           </motion.div>
 
           {/* Progress bar container */}
