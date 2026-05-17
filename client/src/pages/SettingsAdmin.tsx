@@ -97,7 +97,10 @@ export default function SettingsAdmin() {
               </div>
               <Field label="Title / Role" k="title" />
               <Field label="Bio" k="bio" type="textarea" />
-              <ImagePicker label="Avatar / Profile Image URL" value={settings.avatarUrl || ''} onChange={val => set('avatarUrl', val)} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <ImagePicker label="Avatar / Hero Image URL" value={settings.avatarUrl || ''} onChange={val => set('avatarUrl', val)} />
+                <ImagePicker label="About Section Image URL" value={settings.aboutImageUrl || ''} onChange={val => set('aboutImageUrl', val)} />
+              </div>
             </div>
           </div>
 

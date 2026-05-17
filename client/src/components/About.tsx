@@ -35,7 +35,7 @@ export default function About({ settings }: { settings: any }) {
               transform: 'rotate(3deg)'
             }}>
               <img 
-                src={settings?.avatarUrl || "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=800"} 
+                src={settings?.aboutImageUrl || settings?.avatarUrl || "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=800"} 
                 alt="About"
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
