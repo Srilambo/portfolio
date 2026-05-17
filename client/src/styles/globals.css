@@ -368,11 +368,7 @@ body::after {
   transform: translate(-50%, 0);
 }
 
-/* Pause the animation on hover over the entire container */
-.orbit-wrapper:hover .orbit-container,
-.orbit-wrapper:hover .orbit-icon {
-  animation-play-state: paused;
-}
+
 
 /* Keyframes for orbit and counter-orbit */
 @keyframes orbit {

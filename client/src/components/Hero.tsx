@@ -117,21 +117,16 @@ const techIcons = [
 export default function Hero({ settings }: { settings: any }) {
   const [hoveredCard, setHoveredCard] = useState(false);
   const [orbitAngle, setOrbitAngle] = useState(0);
-  const [boostSpeed, setBoostSpeed] = useState(1);
-  const [clickedIcon, setClickedIcon] = useState<string | null>(null);
 
   useEffect(() => {
     let animId: number;
     const updateAngle = () => {
-      setOrbitAngle(prev => (prev + 0.4 * boostSpeed) % 360);
-      if (boostSpeed > 1) {
-        setBoostSpeed(prev => Math.max(1, prev - 0.08));
-      }
+      setOrbitAngle(prev => (prev + 0.35) % 360);
       animId = requestAnimationFrame(updateAngle);
     };
     animId = requestAnimationFrame(updateAngle);
     return () => cancelAnimationFrame(animId);
-  }, [boostSpeed]);
+  }, []);
 
   const handleMouseLeave = () => {
     setHoveredCard(false);
@@ -340,39 +335,21 @@ export default function Hero({ settings }: { settings: any }) {
                   const leftPercent = ((200 + xRotated) / 400) * 100;
                   const topPercent = ((200 + yRotated) / 400) * 100;
                   
-                  const isClicked = clickedIcon === tech.name;
                   const isFront = Math.sin(iconTheta) >= 0;
-                  const zIndex = isClicked ? 50 : (isFront ? 3 : 1);
-                  
-                  const parallaxX = 0;
-                  const parallaxY = isFront ? -10 : 0;
                   
                   return (
                     <div 
                       key={tech.name}
                       className="orbit-icon-wrapper"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setClickedIcon(tech.name);
-                        setBoostSpeed(8);
-                        setTimeout(() => setClickedIcon(null), 850);
-                      }}
                       style={{
                         position: 'absolute',
                         left: `${leftPercent}%`,
                         top: `${topPercent}%`,
-                        zIndex,
-                        pointerEvents: 'auto',
-                        cursor: 'pointer',
-                        transform: isClicked
-                          ? `translate(-50%, -50%) translateX(${parallaxX}px) translateY(${parallaxY}px) scale(1.65) rotate(360deg)`
-                          : (hoveredCard
-                              ? `translate(-50%, -50%) translateX(${parallaxX}px) translateY(${parallaxY}px) scale(${isFront ? 1.08 : 0.86})`
-                              : `translate(-50%, -50%) scale(${isFront ? 1 : 0.88})`),
-                        transition: isClicked 
-                          ? 'all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-                          : 'all 0.5s cubic-bezier(0.25, 1, 0.5, 1)',
-                        opacity: isClicked ? 1 : (isFront ? 1 : 0.5)
+                        zIndex: isFront ? 3 : 1,
+                        pointerEvents: 'none',
+                        transform: `translate(-50%, -50%) scale(${isFront ? 1 : 0.88})`,
+                        transition: 'opacity 0.5s ease',
+                        opacity: isFront ? 1 : 0.5
                       }}
                     >
                       <div 
