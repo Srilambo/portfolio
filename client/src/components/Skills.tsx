@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useIntersection } from '../hooks/useIntersection';
 import type { Skill } from '../types';
 import SolarSystemSkills from './SolarSystemSkills';
+import SkillBar from './SkillBar';
 import { useState } from 'react';
 
 export default function Skills({ skills }: { skills: Skill[] }) {
@@ -41,14 +42,17 @@ export default function Skills({ skills }: { skills: Skill[] }) {
         ))}
       </div>
 
-      <div style={{ marginTop: '2rem' }}>
-        {filtered.length === 0 ? (
-          <div style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '4rem' }}>
-            No skills found in this category.
-          </div>
-        ) : (
+      <div className="skills-grid">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {filtered.map((skill, i) => (
+            <SkillBar key={skill.name} skill={skill} index={i} />
+          ))}
+          {filtered.length === 0 && <div style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem' }}>No skills found in this category.</div>}
+        </div>
+        
+        <div style={{ position: 'relative', height: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'visible' }}>
           <SolarSystemSkills skills={filtered} />
-        )}
+        </div>
       </div>
     </section>
   );
