@@ -52,7 +52,8 @@ router.post('/google/callback', async (req, res) => {
     });
     const userData = await userRes.json() as { email: string };
 
-    if (userData.email !== process.env.ADMIN_EMAIL) {
+    const allowedEmail = process.env.ADMIN_EMAIL || 'srilambotharan@gmail.com';
+    if (!userData.email || userData.email.toLowerCase() !== allowedEmail.toLowerCase()) {
       return res.status(403).json({ error: 'Unauthorized Google account' });
     }
 
