@@ -20,12 +20,14 @@ router.get('/', async (_req, res) => {
     const projects   = await getData('projects')   ?? [];
     const skills     = await getData('skills')     ?? [];
     const experience = await getData('experience') ?? [];
+    const blogs      = await getData('blogs')      ?? [];
 
     res.json({
       settings,
       projects,
       skills,
-      experience
+      experience,
+      blogs
     });
   } catch (err: any) {
     console.error('Data fetch error:', err);

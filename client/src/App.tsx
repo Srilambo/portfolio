@@ -9,6 +9,7 @@ import SkillsAdmin from './pages/SkillsAdmin';
 import ExperienceAdmin from './pages/ExperienceAdmin';
 import MessagesAdmin from './pages/MessagesAdmin';
 import SettingsAdmin from './pages/SettingsAdmin';
+import BlogsAdmin from './pages/BlogsAdmin';
 
 function DashboardHome() {
   return (
@@ -19,6 +20,7 @@ function DashboardHome() {
           { icon: '🗂️', label: 'Projects',   to: '/admin/projects' },
           { icon: '⚡', label: 'Skills',     to: '/admin/skills' },
           { icon: '💼', label: 'Experience', to: '/admin/experience' },
+          { icon: '📝', label: 'Blogs',      to: '/admin/blogs' },
           { icon: '✉️', label: 'Messages',   to: '/admin/messages' },
           { icon: '⚙️', label: 'Settings',   to: '/admin/settings' },
         ].map(card => (
@@ -47,6 +49,7 @@ export default function App() {
               <Route path="/admin/projects"    element={<ProjectsAdmin />} />
               <Route path="/admin/skills"      element={<SkillsAdmin />} />
               <Route path="/admin/experience"  element={<ExperienceAdmin />} />
+              <Route path="/admin/blogs"       element={<BlogsAdmin />} />
               <Route path="/admin/messages"    element={<MessagesAdmin />} />
               <Route path="/admin/settings"    element={<SettingsAdmin />} />
             </Route>

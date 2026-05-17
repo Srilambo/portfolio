@@ -6,6 +6,7 @@ import Services from '../components/Services';
 import Skills from '../components/Skills';
 import Projects from '../components/Projects';
 import Experience from '../components/Experience';
+import Blogs from '../components/Blogs';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import ScrollProgress from '../components/ScrollProgress';
@@ -77,7 +78,7 @@ export default function PortfolioPage() {
     );
   }
 
-  const { settings = {}, projects = [], skills = [], experience = [] } = data || {};
+  const { settings = {}, projects = [], skills = [], experience = [], blogs = [] } = data || {};
 
   return (
     <>
@@ -87,10 +88,11 @@ export default function PortfolioPage() {
       <main>
         <Hero settings={settings} />
         <About settings={settings} />
-        <Services />
+        <Services settings={settings} />
         <Skills skills={skills} />
         <Projects projects={projects} />
         <Experience experience={experience} />
+        <Blogs blogs={blogs} />
         <Contact settings={settings} />
       </main>
       <Footer settings={settings} />

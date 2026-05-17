@@ -30,4 +30,8 @@ router.post('/skills',     async (req, res)  => { await setData('skills', req.bo
 router.get('/experience',  async (_req, res) => res.json(await getData('experience') ?? []));
 router.post('/experience', async (req, res)  => { await setData('experience', req.body); res.json({ success: true }); });
 
+// Blogs
+router.get('/blogs',       async (_req, res) => res.json(await getData('blogs') ?? []));
+router.post('/blogs',      async (req, res)  => { await setData('blogs', req.body);     res.json({ success: true }); });
+
 export default router;

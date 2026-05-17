@@ -19,6 +19,7 @@ interface Settings {
   github: string;
   metaTitle: string;
   metaDescription: string;
+  cvUrl?: string;
 }
 
 const DEFAULT: Settings = {
@@ -38,6 +39,7 @@ const DEFAULT: Settings = {
   github: 'https://github.com/srilambo', 
   metaTitle: 'Srilambo | Fullstack Developer Portfolio',
   metaDescription: 'React, Node.js, Three.js. Building scalable web apps from pixel to production.',
+  cvUrl: '',
 };
 
 export default function SettingsAdmin() {
@@ -101,6 +103,71 @@ export default function SettingsAdmin() {
               <Field label="Mobile No" k="phone" type="tel" />
               <Field label="WhatsApp No / Link" k="whatsapp" />
               <Field label="Email Address" k="email" type="email" />
+            </div>
+          </div>
+
+          {/* CV / Resume */}
+          <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.5rem' }}>
+            <h3 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: 700, color: '#111827', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem' }}>CV / Resume</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <Field label="CV Document URL (Google Drive / Dropbox)" k="cvUrl" type="url" />
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#374151' }}>Or Upload Local CV (PDF / Document)</label>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      const fileInput = document.getElementById('cv-file-input');
+                      fileInput?.click();
+                    }}
+                    style={{
+                      padding: '0.55rem 1.1rem',
+                      borderRadius: 8,
+                      border: '1px solid #d1d5db',
+                      background: '#fff',
+                      color: '#374151',
+                      fontWeight: 600,
+                      fontSize: '0.825rem',
+                      cursor: 'pointer',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                      fontFamily: 'Inter, sans-serif'
+                    }}
+                  >
+                    {settings.cvUrl && settings.cvUrl.startsWith('data:') ? 'Change PDF File' : 'Upload PDF File'}
+                  </button>
+                  
+                  <input 
+                    id="cv-file-input"
+                    type="file" 
+                    accept=".pdf,.doc,.docx"
+                    style={{ display: 'none' }}
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          const result = event.target?.result as string;
+                          set('cvUrl', result);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+
+                  {settings.cvUrl && settings.cvUrl.startsWith('data:') && (
+                    <span style={{ fontSize: '0.75rem', color: '#22c55e', fontWeight: 600 }}>
+                      ✓ Custom PDF Uploaded (~{(settings.cvUrl.length / 1024).toFixed(1)} KB)
+                    </span>
+                  )}
+
+                  {settings.cvUrl && !settings.cvUrl.startsWith('data:') && (
+                    <span style={{ fontSize: '0.75rem', color: '#6b7280', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      🔗 Linked via URL
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
