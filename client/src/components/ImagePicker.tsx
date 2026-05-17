@@ -17,6 +17,8 @@ export default function ImagePicker({ value, onChange, label }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
+  const [qualityMode, setQualityMode] = useState<'standard' | '4k'>('4k');
+
   // Client-side canvas compression to keep Base64 size highly optimized
   const compressAndSetImage = (fileOrBlob: File | Blob) => {
     const reader = new FileReader();
@@ -24,8 +26,13 @@ export default function ImagePicker({ value, onChange, label }: Props) {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 500;
-        const MAX_HEIGHT = 500;
+        
+        // Determine resolution limit and JPEG compression quality factor
+        const is4k = qualityMode === '4k';
+        const MAX_WIDTH = is4k ? 2560 : 600;
+        const MAX_HEIGHT = is4k ? 2560 : 600;
+        const compressionQuality = is4k ? 0.85 : 0.75;
+        
         let width = img.width;
         let height = img.height;
 
@@ -48,10 +55,15 @@ export default function ImagePicker({ value, onChange, label }: Props) {
           onChange(e.target?.result as string);
           return;
         }
+        
+        // Apply high-fidelity image smoothing settings for perfect visual scaling
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
         ctx.drawImage(img, 0, 0, width, height);
         
-        // Compress as JPEG with 0.75 quality for an extremely lightweight payload (~20-40KB)
-        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+        // Compress using custom resolution parameters
+        const compressedBase64 = canvas.toDataURL('image/jpeg', compressionQuality);
         onChange(compressedBase64);
       };
       img.onerror = () => {
@@ -256,6 +268,66 @@ export default function ImagePicker({ value, onChange, label }: Props) {
 
             {!cameraActive ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {/* Premium Quality Selector */}
+                <div style={{
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 12,
+                  padding: '0.85rem 1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '0.25rem'
+                }}>
+                  <div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', fontFamily: 'Inter, sans-serif' }}>Upload Quality</div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: 2, fontFamily: 'Inter, sans-serif' }}>
+                      {qualityMode === '4k' ? '✨ Ultra HD 4K Crisp (2560px)' : '⚡ Standard Mobile (600px)'}
+                    </div>
+                  </div>
+                  
+                  <div style={{ display: 'flex', gap: 4, background: '#e2e8f0', borderRadius: 8, padding: 3 }}>
+                    <button
+                      type="button"
+                      onClick={() => setQualityMode('standard')}
+                      style={{
+                        padding: '0.35rem 0.65rem',
+                        borderRadius: 6,
+                        border: 'none',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        background: qualityMode === 'standard' ? '#fff' : 'transparent',
+                        color: qualityMode === 'standard' ? '#0f172a' : '#64748b',
+                        boxShadow: qualityMode === 'standard' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                        transition: 'all 0.15s',
+                        fontFamily: 'Inter, sans-serif'
+                      }}
+                    >
+                      Standard
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setQualityMode('4k')}
+                      style={{
+                        padding: '0.35rem 0.65rem',
+                        borderRadius: 6,
+                        border: 'none',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        background: qualityMode === '4k' ? 'linear-gradient(135deg, #00f5ff, #8b5cf6)' : 'transparent',
+                        color: qualityMode === '4k' ? '#fff' : '#64748b',
+                        boxShadow: qualityMode === '4k' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                        transition: 'all 0.15s',
+                        fontFamily: 'Inter, sans-serif'
+                      }}
+                    >
+                      🔥 Ultra HD 4K
+                    </button>
+                  </div>
+                </div>
+
                 {/* 3 Option Grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
                   
