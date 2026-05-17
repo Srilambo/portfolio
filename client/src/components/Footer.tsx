@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SOCIAL_ICONS: Record<string, { icon: React.ReactNode; brandColor: string }> = {
+export const SOCIAL_ICONS: Record<string, { icon: React.ReactNode; brandColor: string }> = {
   Facebook: {
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
