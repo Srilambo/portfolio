@@ -43,7 +43,7 @@ export default function App() {
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route element={<PrivateRoute />}>
             <Route element={<AdminDashboard />}>
-              <Route path="/admin/dashboard"   element={<DashboardHome />} />
+              <Route path="/admin"             element={<DashboardHome />} />
               <Route path="/admin/projects"    element={<ProjectsAdmin />} />
               <Route path="/admin/skills"      element={<SkillsAdmin />} />
               <Route path="/admin/experience"  element={<ExperienceAdmin />} />

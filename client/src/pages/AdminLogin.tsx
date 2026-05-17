@@ -38,7 +38,7 @@ export default function AdminLogin() {
       
       const { token } = await res.json();
       login(token);
-      navigate('/admin/dashboard', { replace: true });
+      navigate('/admin', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
       // Clean URL hash but keep the path
