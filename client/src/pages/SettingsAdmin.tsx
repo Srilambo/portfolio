@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAdminApi } from '../hooks/useAdminApi';
+import ImagePicker from '../components/ImagePicker';
 
 interface Settings {
   name: string; title: string; bio: string; avatarUrl: string;
@@ -73,7 +74,7 @@ export default function SettingsAdmin() {
               <Field label="Full Name" k="name" />
               <Field label="Title / Role" k="title" />
               <Field label="Bio" k="bio" type="textarea" />
-              <Field label="Avatar / Profile Image URL" k="avatarUrl" type="url" />
+              <ImagePicker label="Avatar / Profile Image URL" value={settings.avatarUrl || ''} onChange={val => set('avatarUrl', val)} />
             </div>
           </div>
 

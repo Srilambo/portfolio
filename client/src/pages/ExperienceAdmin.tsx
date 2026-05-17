@@ -3,6 +3,7 @@ import { useAdminApi } from '../hooks/useAdminApi';
 import type { Experience } from '../types';
 import { experiences as defaultExp } from '../data/experience';
 import ConfirmModal from '../components/ConfirmModal';
+import ImagePicker from '../components/ImagePicker';
 
 export default function ExperienceAdmin() {
   const { request } = useAdminApi();
@@ -131,12 +132,17 @@ export default function ExperienceAdmin() {
               <button onClick={() => { setEditing(null); setEditingIdx(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.25rem', color: '#6b7280' }}>✕</button>
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {([['company','Company Name'],['role','Role / Title'],['period','Period (e.g. 2021 — Present)'],['logo','Logo / Image URL']] as [keyof Experience, string][]).map(([k, label]) => (
+              {([['company','Company Name'],['role','Role / Title'],['period','Period (e.g. 2021 — Present)']] as [keyof Experience, string][]).map(([k, label]) => (
                 <div key={k}>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#374151', marginBottom: 4 }}>{label}</label>
                   <input value={String(editing[k] || '')} onChange={e => setEditing(ed => ed ? { ...ed, [k]: e.target.value } : ed)} style={inp} />
                 </div>
               ))}
+              <ImagePicker 
+                label="Logo / Image URL" 
+                value={editing.logo || ''} 
+                onChange={val => setEditing(ed => ed ? { ...ed, logo: val } : ed)} 
+              />
               <div>
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#374151', marginBottom: 4 }}>Bullets (one per line)</label>
                 <textarea
