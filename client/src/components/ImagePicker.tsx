@@ -17,7 +17,7 @@ export default function ImagePicker({ value, onChange, label }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const [qualityMode, setQualityMode] = useState<'standard' | '4k'>('4k');
+  const [qualityMode, setQualityMode] = useState<'standard' | '4k'>('standard');
 
   // AI Background removal states
   const isProfilePicker = label.toLowerCase().includes('avatar') || label.toLowerCase().includes('profile');

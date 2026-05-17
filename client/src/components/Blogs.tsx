@@ -63,12 +63,14 @@ export default function Blogs({ blogs }: { blogs: Blog[] }) {
               flexDirection: 'column',
               justifyContent: 'flex-end',
               cursor: 'pointer',
-              transition: 'transform 0.3s, border-color 0.3s, box-shadow 0.3s'
+              transition: 'transform 0.3s, border-color 0.3s, box-shadow 0.3s',
+              transform: 'translateZ(0)',
+              willChange: 'transform'
             }}
             onClick={() => setActiveBlog(blog)}
             onMouseEnter={e => {
               const el = e.currentTarget as HTMLElement;
-              el.style.transform = 'translateY(-6px)';
+              el.style.transform = 'translateY(-6px) translateZ(0)';
               el.style.borderColor = 'rgba(56, 189, 248, 0.5)';
               el.style.boxShadow = '0 15px 35px rgba(56, 189, 248, 0.15)';
               const img = el.querySelector('img');
