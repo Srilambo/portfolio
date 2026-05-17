@@ -55,8 +55,11 @@ export default function Blogs({ blogs }: { blogs: Blog[] }) {
               borderRadius: 24,
               border: '1px solid var(--border-glass)',
               overflow: 'hidden',
+              position: 'relative',
+              minHeight: 420,
               display: 'flex',
               flexDirection: 'column',
+              justifyContent: 'flex-end',
               cursor: 'pointer',
               transition: 'transform 0.3s, border-color 0.3s, box-shadow 0.3s'
             }}
@@ -64,8 +67,8 @@ export default function Blogs({ blogs }: { blogs: Blog[] }) {
             onMouseEnter={e => {
               const el = e.currentTarget as HTMLElement;
               el.style.transform = 'translateY(-6px)';
-              el.style.borderColor = 'var(--accent)';
-              el.style.boxShadow = '0 12px 30px rgba(0,245,255,0.08)';
+              el.style.borderColor = 'rgba(56, 189, 248, 0.5)';
+              el.style.boxShadow = '0 15px 35px rgba(56, 189, 248, 0.15)';
               const img = el.querySelector('img');
               if (img) img.style.transform = 'scale(1.08)';
             }}
@@ -78,50 +81,61 @@ export default function Blogs({ blogs }: { blogs: Blog[] }) {
               if (img) img.style.transform = 'scale(1)';
             }}
           >
-            {/* Image frame */}
-            <div style={{ width: '100%', aspectRatio: '1.7', overflow: 'hidden', relative: 'relative' as any, background: 'var(--bg-glass)' }}>
+            {/* Full Background Image */}
+            <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
               {blog.image ? (
                 <img 
                   src={blog.image} 
                   alt={blog.title} 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)' }} 
                 />
               ) : (
-                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontSize: '1.2rem', fontWeight: 700 }}>
-                  📄 ARTICLE
-                </div>
+                <div style={{ width: '100%', height: '100%', background: 'linear-gradient(45deg, #0f172a, #1e293b)' }} />
               )}
+              {/* Gradient overlay so glassmorphism stands out */}
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(2,6,23,0.9) 0%, rgba(2,6,23,0) 70%)' }} />
             </div>
 
-            {/* Body */}
-            <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+            {/* Glassmorphic Content Body */}
+            <div style={{ 
+              position: 'relative', 
+              zIndex: 1, 
+              padding: '1.5rem', 
+              background: 'rgba(5, 8, 22, 0.5)', 
+              backdropFilter: 'blur(12px)', 
+              WebkitBackdropFilter: 'blur(12px)',
+              borderTop: '1px solid rgba(255,255,255,0.08)',
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '0.8rem' 
+            }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{
-                  background: 'rgba(0,245,255,0.08)',
-                  border: '1px solid rgba(0,245,255,0.2)',
-                  color: 'var(--accent)',
+                  background: 'rgba(56, 189, 248, 0.15)',
+                  border: '1px solid rgba(56, 189, 248, 0.3)',
+                  color: '#38bdf8',
                   fontSize: '0.75rem',
-                  fontWeight: 700,
+                  fontWeight: 800,
                   padding: '0.2rem 0.65rem',
                   borderRadius: 6,
-                  textTransform: 'uppercase' as any
+                  textTransform: 'uppercase'
                 }}>
                   {blog.category}
                 </span>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{blog.date}</span>
+                <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', fontWeight: 600 }}>{blog.date}</span>
               </div>
 
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text)', lineHeight: 1.4 }}>
+              <h3 style={{ fontSize: '1.3rem', fontWeight: 800, margin: '0.3rem 0 0', color: '#fff', lineHeight: 1.3 }}>
                 {blog.title}
               </h3>
 
               <p style={{
-                color: 'var(--text-secondary)',
-                fontSize: '0.9rem',
+                color: 'rgba(255,255,255,0.65)',
+                fontSize: '0.95rem',
                 lineHeight: 1.6,
                 margin: 0,
                 display: '-webkit-box',
-                WebkitLineClamp: 3,
+                WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis'
@@ -129,8 +143,8 @@ export default function Blogs({ blogs }: { blogs: Blog[] }) {
                 {blog.content}
               </p>
 
-              <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 6, color: 'var(--accent)', fontWeight: 700, fontSize: '0.9rem' }}>
-                Read Narrative <span style={{ transition: 'transform 0.2s' }} className="arrow">→</span>
+              <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: 6, color: '#38bdf8', fontWeight: 700, fontSize: '0.9rem' }}>
+                Read Narrative <span style={{ transition: 'transform 0.2s' }}>→</span>
               </div>
             </div>
           </motion.div>
