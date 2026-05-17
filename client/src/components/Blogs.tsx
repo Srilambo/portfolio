@@ -39,10 +39,12 @@ export default function Blogs({ blogs }: { blogs: Blog[] }) {
       {/* Grid of blogs */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
         gap: '2.5rem',
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        maxWidth: 1200,
+        margin: '0 auto'
       }}>
         {blogs.map((blog, i) => (
           <motion.div
@@ -226,7 +228,7 @@ export default function Blogs({ blogs }: { blogs: Blog[] }) {
 
               {/* Cover image */}
               {activeBlog.image && (
-                <div style={{ width: '100%', aspectRatio: '2', borderRadius: 16, overflow: 'hidden', border: '1px solid var(--border-glass)' }}>
+                <div style={{ width: '100%', aspectRatio: '16/9', maxHeight: 450, borderRadius: 16, overflow: 'hidden', border: '1px solid var(--border-glass)' }}>
                   <img src={activeBlog.image} alt={activeBlog.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               )}
