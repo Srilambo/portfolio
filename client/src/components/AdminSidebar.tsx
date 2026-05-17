@@ -10,38 +10,78 @@ const LINKS = [
   { to: '/admin/settings',    label: 'Settings',    icon: (props: any) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg> },
 ];
 
-export default function AdminSidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+  isMobile?: boolean;
+}
+
+export default function AdminSidebar({ isOpen = false, onClose, isMobile = false }: SidebarProps) {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => { logout(); navigate('/admin/login', { replace: true }); };
+  const handleLogout = () => {
+    logout();
+    if (onClose) onClose();
+    navigate('/admin/login', { replace: true });
+  };
 
   return (
     <aside style={{
       width: 280, 
-      minHeight: '100vh', 
+      height: '100vh', 
       background: '#0f172a', 
       display: 'flex', 
       flexDirection: 'column', 
       flexShrink: 0,
-      boxShadow: '10px 0 30px rgba(0,0,0,0.1)',
-      zIndex: 20
+      boxShadow: '10px 0 30px rgba(0,0,0,0.15)',
+      zIndex: 999,
+      
+      // Responsive rules
+      position: isMobile ? 'fixed' : 'sticky',
+      top: 0,
+      left: isMobile ? (isOpen ? 0 : -280) : 0,
+      transition: 'left 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
     }}>
       {/* Brand */}
-      <div style={{ padding: '2.5rem 2rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #38bdf8, #818cf8)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, color: '#020617' }}>S</div>
-        <div>
-          <div style={{ fontWeight: 800, fontSize: '1rem', color: '#f8fafc', letterSpacing: '-0.02em' }}>SRILAMBO</div>
-          <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Portfolio Admin</div>
+      <div style={{ 
+        padding: '2.5rem 2rem', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        borderBottom: '1px solid rgba(255,255,255,0.05)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #38bdf8, #818cf8)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, color: '#020617' }}>S</div>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: '1rem', color: '#f8fafc', letterSpacing: '-0.02em' }}>SRILAMBO</div>
+            <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Portfolio Admin</div>
+          </div>
         </div>
+        
+        {isMobile && (
+          <button 
+            onClick={onClose} 
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              color: '#64748b', 
+              fontSize: '1.4rem', 
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >✕</button>
+        )}
       </div>
 
       {/* Nav links */}
-      <nav style={{ flex: 1, padding: '1rem' }}>
+      <nav style={{ flex: 1, padding: '1rem', overflowY: 'auto' }}>
         {LINKS.map(l => (
           <NavLink
             key={l.to}
             to={l.to}
+            onClick={() => isMobile && onClose && onClose()}
             style={({ isActive }) => ({
               display: 'flex', alignItems: 'center', gap: '1rem',
               padding: '0.875rem 1.25rem',
