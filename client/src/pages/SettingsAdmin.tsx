@@ -198,6 +198,100 @@ export default function SettingsAdmin() {
             </div>
           </div>
 
+          {/* Backup & Restore */}
+          <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.5rem' }}>
+            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1rem', fontWeight: 700, color: '#111827' }}>💾 Backup & Restore Portfolio</h3>
+            <p style={{ margin: '0 0 1.25rem', fontSize: '0.8rem', color: '#6b7280', lineHeight: 1.5 }}>
+              Export all your profile settings, projects, skills, experience, and blogs to a secure JSON file, or restore them instantly if your database gets reset.
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <button 
+                type="button" 
+                onClick={async () => {
+                  try {
+                    const data = await request<any>('/api/admin/settings/backup');
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `srilambo_portfolio_backup_${new Date().toISOString().slice(0, 10)}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  } catch (err: any) {
+                    alert('Backup failed: ' + err.message);
+                  }
+                }}
+                style={{
+                  padding: '0.65rem 1.25rem',
+                  borderRadius: 8,
+                  border: '1px solid #00f5ff',
+                  background: 'rgba(0, 245, 255, 0.05)',
+                  color: '#00c3cc',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  fontFamily: 'Inter, sans-serif'
+                }}
+              >
+                📥 Export JSON Backup
+              </button>
+
+              <button 
+                type="button" 
+                onClick={() => {
+                  const input = document.getElementById('restore-file-input');
+                  input?.click();
+                }}
+                style={{
+                  padding: '0.65rem 1.25rem',
+                  borderRadius: 8,
+                  border: '1px solid #d1d5db',
+                  background: '#f9fafb',
+                  color: '#374151',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  fontFamily: 'Inter, sans-serif'
+                }}
+              >
+                📤 Import Backup File
+              </button>
+
+              <input 
+                id="restore-file-input"
+                type="file" 
+                accept=".json"
+                style={{ display: 'none' }}
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  if (!window.confirm('Are you sure you want to restore this backup? This will overwrite your current settings, projects, skills, experience, and blogs.')) {
+                    e.target.value = '';
+                    return;
+                  }
+
+                  const reader = new FileReader();
+                  reader.onload = async (event) => {
+                    try {
+                      const json = JSON.parse(event.target?.result as string);
+                      await request('/api/admin/settings/restore', {
+                        method: 'POST',
+                        body: JSON.stringify(json)
+                      });
+                      alert('✓ Portfolio backup restored successfully! Reloading page...');
+                      window.location.reload();
+                    } catch (err: any) {
+                      alert('Restore failed: ' + err.message);
+                    }
+                  };
+                  reader.readAsText(file);
+                }}
+              />
+            </div>
+          </div>
+
           <button onClick={save} disabled={saving}
             style={{ padding: '0.85rem', borderRadius: 8, border: 'none', background: saved ? '#22c55e' : '#00f5ff', color: '#050816', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', fontFamily: 'Inter, sans-serif', transition: 'background 0.3s' }}>
             {saving ? 'Saving...' : saved ? '✓ Saved!' : 'Save Settings'}
