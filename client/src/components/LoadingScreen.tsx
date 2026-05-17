@@ -51,7 +51,7 @@ export default function LoadingScreen({ isApiLoading = false }: { isApiLoading?:
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.8, type: 'spring' }}
-              style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 10px 30px rgba(56, 189, 248, 0.4)' }}
+              style={{ width: 240, height: 240, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 10px 40px rgba(56, 189, 248, 0.3)' }}
             />
             <div style={{
               fontSize: 'clamp(2.5rem, 8vw, 4rem)', 
