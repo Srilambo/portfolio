@@ -11,7 +11,20 @@ import adminSettingsRouter  from './routes/adminSettings.js';
 import publicSettingsRouter from './routes/publicSettings.js';
 import publicDataRouter     from './routes/publicData.js';
 
+import { connectDB } from './db/db.js';
+
 const app = express();
+
+// ── Database connection assurance (Serverless compatible) ──
+app.use(async (_req, _res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('Failed to establish database connection:', err);
+    next(err);
+  }
+});
 
 // ── Security ───────────────────────────────────────────────
 app.use(helmet());

@@ -3,7 +3,7 @@ import type { Message } from '../hooks/useMessages';
 interface Props {
   message: Message | null;
   onClose: () => void;
-  onStatusChange: (id: number, status: Message['status']) => void;
+  onStatusChange: (id: string, status: Message['status']) => void;
 }
 
 export default function MessagePanel({ message, onClose, onStatusChange }: Props) {

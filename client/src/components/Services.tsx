@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useIntersection } from '../hooks/useIntersection';
 
-export default function Services() {
+export default function Services({ settings }: { settings: any }) {
   const [ref, isVisible] = useIntersection(0.1);
 
   const services = [
@@ -25,17 +25,48 @@ export default function Services() {
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', lineHeight: 1.8, marginBottom: '2rem', maxWidth: 500 }}>
             I provide high-quality design and development services tailored to your business needs, ensuring a premium user experience.
           </p>
-          <button style={{ 
-            background: 'var(--accent)', 
-            color: 'var(--bg)', 
-            padding: '1rem 2rem', 
-            borderRadius: 12, 
-            border: 'none', 
-            fontWeight: 800, 
-            cursor: 'pointer' 
-          }}>
-            Download CV
-          </button>
+          
+          {settings?.cvUrl ? (
+            <a 
+              href={settings.cvUrl} 
+              download={settings.cvUrl.startsWith('data:') ? `${settings.name || 'Srilambo'}_CV.pdf` : undefined}
+              target={settings.cvUrl.startsWith('data:') ? undefined : '_blank'}
+              rel={settings.cvUrl.startsWith('data:') ? undefined : 'noopener noreferrer'}
+              style={{ textDecoration: 'none', display: 'inline-block' }}
+            >
+              <button style={{ 
+                background: 'var(--accent)', 
+                color: 'var(--bg)', 
+                padding: '1rem 2rem', 
+                borderRadius: 12, 
+                border: 'none', 
+                fontWeight: 800, 
+                cursor: 'pointer',
+                transition: 'transform 0.2s' 
+              }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                Download CV 📄
+              </button>
+            </a>
+          ) : (
+            <button 
+              onClick={() => alert("CV will be uploaded soon by the admin!")}
+              style={{ 
+                background: 'var(--accent)', 
+                color: 'var(--bg)', 
+                padding: '1rem 2rem', 
+                borderRadius: 12, 
+                border: 'none', 
+                fontWeight: 800, 
+                cursor: 'pointer',
+                opacity: 0.8
+              }}
+            >
+              Download CV 📄
+            </button>
+          )}
         </motion.div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

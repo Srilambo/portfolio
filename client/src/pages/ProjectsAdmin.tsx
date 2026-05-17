@@ -3,6 +3,7 @@ import { useAdminApi } from '../hooks/useAdminApi';
 import ConfirmModal from '../components/ConfirmModal';
 import type { Project } from '../types';
 import { projects as defaultProjects } from '../data/projects';
+import ImagePicker from '../components/ImagePicker';
 
 const EMPTY: Omit<Project, 'id'> = { title: '', description: '', tech: [], liveUrl: '', githubUrl: '', image: '', category: 'Fullstack' };
 
@@ -102,12 +103,17 @@ export default function ProjectsAdmin() {
           <div style={{ background: '#fff', borderRadius: 16, padding: '2rem', width: '100%', maxWidth: 560, maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
             <h3 style={{ margin: '0 0 1.5rem', fontWeight: 800, color: '#111827' }}>{editing ? 'Edit Project' : 'Add Project'}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {([['title','Title','text'],['description','Description','text'],['liveUrl','Live URL','url'],['githubUrl','GitHub URL','url'],['image','Image URL','url']] as [keyof typeof form, string, string][]).map(([k, label, type]) => (
+              {([['title','Title','text'],['description','Description','text'],['liveUrl','Live URL','url'],['githubUrl','GitHub URL','url']] as [keyof typeof form, string, string][]).map(([k, label, type]) => (
                 <div key={k}>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#374151', marginBottom: 4 }}>{label}</label>
                   <input type={type} value={String(form[k])} onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))} style={inp} />
                 </div>
               ))}
+              <ImagePicker 
+                label="Image URL" 
+                value={form.image || ''} 
+                onChange={val => setForm(f => ({ ...f, image: val }))} 
+              />
               <div>
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#374151', marginBottom: 4 }}>Tech (comma separated)</label>
                 <input value={techInput} onChange={e => setTechInput(e.target.value)} style={inp} placeholder="React, Node.js, PostgreSQL" />

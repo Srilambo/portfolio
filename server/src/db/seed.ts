@@ -5,13 +5,21 @@ import { Setting, DataStore } from './schema.js';
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/portfolio';
 
 const DEMO_SETTINGS = [
-  { key: 'name', value: 'Raavanaa' },
+  { key: 'name', value: 'Ananthkumar Srilambotharasarma' },
   { key: 'role', value: 'Fullstack Developer & 3D Web Enthusiast' },
   { key: 'bio', value: 'I specialize in building high-performance, visually stunning web applications. From interactive 3D interfaces to robust backend architectures, I turn complex ideas into seamless digital experiences.' },
-  { key: 'github', value: 'https://github.com/raavanaa' },
-  { key: 'linkedin', value: 'https://linkedin.com/' },
-  { key: 'twitter', value: 'https://twitter.com/' },
-  { key: 'email', value: 'hello@raavanaa.lk' },
+  { key: 'avatarUrl', value: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800' },
+  { key: 'phone', value: '' },
+  { key: 'whatsapp', value: '' },
+  { key: 'email', value: 'srilambotharan@gmail.com' },
+  { key: 'facebook', value: '' },
+  { key: 'instagram', value: '' },
+  { key: 'tiktok', value: '' },
+  { key: 'linkedin', value: 'https://linkedin.com/in/srilambo' },
+  { key: 'youtube', value: '' },
+  { key: 'github', value: 'https://github.com/srilambo' },
+  { key: 'metaTitle', value: 'Srilambo | Fullstack Developer Portfolio' },
+  { key: 'metaDescription', value: 'React, Node.js, Three.js. Building scalable web apps from pixel to production.' },
 ];
 
 const DEMO_PROJECTS = [
@@ -80,6 +88,23 @@ const DEMO_EXPERIENCE = [
   }
 ];
 
+const DEMO_BLOGS = [
+  {
+    title: 'Designing Ultra HD 4K Portfolios',
+    content: 'In this article, I share my experience optimizing web canvas scaling algorithms to make user avatars, portfolio backgrounds, and work assets render at razor-sharp 4K quality with absolute smooth pixel interpolation. We discuss context image smoothing, memory limits on mobile Safari, and dynamic upscaling tricks using offscreen canvas contexts.',
+    image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800',
+    date: 'May 17, 2026',
+    category: 'Design'
+  },
+  {
+    title: 'Building Premium Glassmorphic Layouts',
+    content: 'A detailed walkthrough of CSS backdrop filter performance, border gradients, and interactive hover effects. Learn how to combine CSS custom variables, framer-motion micro-animations, and dynamic brand colored SVGs to create state-of-the-art landing pages that wow visitors instantly.',
+    image: 'https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?auto=format&fit=crop&q=80&w=800',
+    date: 'May 15, 2026',
+    category: 'Frontend'
+  }
+];
+
 async function seed() {
   try {
     await mongoose.connect(MONGODB_URI);
@@ -94,6 +119,7 @@ async function seed() {
     await DataStore.findOneAndUpdate({ key: 'projects' }, { key: 'projects', value: JSON.stringify(DEMO_PROJECTS) }, { upsert: true });
     await DataStore.findOneAndUpdate({ key: 'skills' }, { key: 'skills', value: JSON.stringify(DEMO_SKILLS) }, { upsert: true });
     await DataStore.findOneAndUpdate({ key: 'experience' }, { key: 'experience', value: JSON.stringify(DEMO_EXPERIENCE) }, { upsert: true });
+    await DataStore.findOneAndUpdate({ key: 'blogs' }, { key: 'blogs', value: JSON.stringify(DEMO_BLOGS) }, { upsert: true });
 
     console.log('✅ Seeding complete!');
     process.exit(0);

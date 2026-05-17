@@ -33,3 +33,11 @@ export interface Message {
   status: 'new' | 'read' | 'replied';
   created_at: string;
 }
+
+export interface Blog {
+  title: string;
+  content: string;
+  image: string;
+  date: string;
+  category: string;
+}

@@ -1,0 +1,677 @@
+import { useState, useRef, useEffect } from 'react';
+
+interface Props {
+  value: string;
+  onChange: (val: string) => void;
+  label: string;
+}
+
+export default function ImagePicker({ value, onChange, label }: Props) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [cameraActive, setCameraActive] = useState(false);
+  const [urlInputActive, setUrlInputActive] = useState(false);
+  const [tempUrl, setTempUrl] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  const [qualityMode, setQualityMode] = useState<'standard' | '4k'>('4k');
+
+  // AI Background removal states
+  const isProfilePicker = label.toLowerCase().includes('avatar') || label.toLowerCase().includes('profile');
+  const [autoRemoveBg, setAutoRemoveBg] = useState(isProfilePicker);
+  const [processing, setProcessing] = useState(false);
+  const [progressMsg, setProgressMsg] = useState('');
+
+  // Client-side canvas compression to keep Base64 size highly optimized
+  const compressAndSetImage = (fileOrBlob: File | Blob, format: 'image/jpeg' | 'image/png' = 'image/jpeg') => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        
+        // Determine resolution limit and quality parameters
+        const is4k = qualityMode === '4k';
+        const MAX_WIDTH = is4k ? 2048 : 600;
+        const MAX_HEIGHT = is4k ? 2048 : 600;
+        const compressionQuality = is4k ? 0.85 : 0.75;
+        
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          onChange(e.target?.result as string);
+          return;
+        }
+        
+        // Apply high-fidelity image smoothing settings for perfect visual scaling
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Compress using custom resolution parameters
+        const compressedBase64 = canvas.toDataURL(format, format === 'image/jpeg' ? compressionQuality : undefined);
+        onChange(compressedBase64);
+      };
+      img.onerror = () => {
+        setErrorMessage('Failed to process image format.');
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => {
+      setErrorMessage('Failed to read the image file.');
+    };
+    reader.readAsDataURL(fileOrBlob);
+  };
+
+  // Main coordinator to process image with optional background removal
+  const processImage = async (fileOrBlob: File | Blob) => {
+    setErrorMessage('');
+    
+    if (autoRemoveBg) {
+      setProcessing(true);
+      setProgressMsg('Waking up AI model...');
+      try {
+        // Dynamically import to keep main bundle fast
+        const { removeBackground } = await import('@imgly/background-removal');
+        setProgressMsg('AI is analyzing person...');
+        const transparentBlob = await removeBackground(fileOrBlob, {
+          progress: (state, progress) => {
+            const pct = (progress * 100).toFixed(0);
+            if (state === 'fetch') {
+              setProgressMsg(`Downloading AI model... ${pct}%`);
+            } else if (state === 'compute') {
+              setProgressMsg(`Extracting person in 3D... ${pct}%`);
+            }
+          }
+        });
+        setProgressMsg('Optimizing transparent PNG...');
+        compressAndSetImage(transparentBlob, 'image/png');
+      } catch (err) {
+        console.error(err);
+        setErrorMessage('AI Background removal failed. Saving original image.');
+        compressAndSetImage(fileOrBlob, 'image/jpeg');
+      } finally {
+        setProcessing(false);
+      }
+    } else {
+      compressAndSetImage(fileOrBlob, 'image/jpeg');
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processImage(file);
+      setModalOpen(false);
+    }
+  };
+
+  const startCamera = async () => {
+    setErrorMessage('');
+    setUrlInputActive(false);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }
+      });
+      streamRef.current = stream;
+      setCameraActive(true);
+      
+      // Delay slightly to ensure video element is fully mounted and ready
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      }, 100);
+    } catch (err) {
+      setErrorMessage('Could not access camera. Please check permissions.');
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setCameraActive(false);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current) {
+      const video = videoRef.current;
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            processImage(blob);
+            stopCamera();
+            setModalOpen(false);
+          }
+        }, 'image/jpeg', 0.8);
+      }
+    }
+  };
+
+  const handleUrlSubmit = async () => {
+    if (tempUrl.trim()) {
+      const url = tempUrl.trim();
+      if (autoRemoveBg && url.startsWith('http')) {
+        setProcessing(true);
+        setProgressMsg('Fetching image from address...');
+        try {
+          const res = await fetch(url);
+          const blob = await res.blob();
+          await processImage(blob);
+        } catch (err) {
+          console.error(err);
+          setErrorMessage('Failed to fetch image for background removal due to security (CORS) limits. Using original URL.');
+          onChange(url);
+        } finally {
+          setProcessing(false);
+          setModalOpen(false);
+          setUrlInputActive(false);
+        }
+      } else {
+        onChange(url);
+        setModalOpen(false);
+        setUrlInputActive(false);
+      }
+    }
+  };
+
+  // Safe cleanup if picker is unmounted while camera is active
+  useEffect(() => {
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#374151' }}>{label}</label>
+      
+      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        {/* Preview Frame */}
+        <div style={{
+          width: 80,
+          height: 80,
+          borderRadius: 12,
+          border: '2px solid #e5e7eb',
+          background: '#f9fafb',
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0
+        }}>
+          {value ? (
+            <img src={value} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <span style={{ fontSize: '1.5rem', color: '#9ca3af' }}>🖼️</span>
+          )}
+        </div>
+
+        {/* Trigger Button */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <button 
+            type="button"
+            onClick={() => { setTempUrl(value.startsWith('http') ? value : ''); setModalOpen(true); }}
+            style={{
+              padding: '0.55rem 1.1rem',
+              borderRadius: 8,
+              border: '1px solid #d1d5db',
+              background: '#fff',
+              color: '#374151',
+              fontWeight: 600,
+              fontSize: '0.825rem',
+              cursor: 'pointer',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+              fontFamily: 'Inter, sans-serif'
+            }}
+          >
+            {value ? 'Change Image' : 'Select Image'}
+          </button>
+          {value && !value.startsWith('data:') && (
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              🔗 {value}
+            </div>
+          )}
+          {value && value.startsWith('data:') && (
+            <div style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 600 }}>
+              📂 Custom Uploaded Image (~{(value.length / 1024).toFixed(1)} KB)
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Hidden File Input */}
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        onChange={handleFileChange} 
+        accept="image/*" 
+        style={{ display: 'none' }} 
+      />
+
+      {/* Modern Glassmorphic Upload Modal */}
+      {modalOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(5, 8, 22, 0.45)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '1rem'
+        }} onClick={() => { stopCamera(); setModalOpen(false); }}>
+          
+          <div style={{
+            background: '#fff',
+            borderRadius: 20,
+            padding: '2rem',
+            width: '100%',
+            maxWidth: 450,
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            border: '1px solid #f3f4f6'
+          }} onClick={e => e.stopPropagation()}>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h3 style={{ margin: 0, fontWeight: 800, color: '#111827', fontSize: '1.15rem' }}>Update Photo</h3>
+              <button 
+                type="button"
+                onClick={() => { stopCamera(); setModalOpen(false); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.25rem', color: '#9ca3af' }}
+              >✕</button>
+            </div>
+
+            {errorMessage && (
+              <div style={{
+                background: '#fef2f2',
+                border: '1px solid #fee2e2',
+                color: '#ef4444',
+                padding: '0.75rem 1rem',
+                borderRadius: 8,
+                fontSize: '0.8rem',
+                marginBottom: '1rem',
+                fontWeight: 600
+              }}>
+                ⚠️ {errorMessage}
+              </div>
+            )}
+
+            {!cameraActive ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {/* AI Background removal toggle */}
+                <div style={{
+                  background: 'rgba(56, 189, 248, 0.08)',
+                  border: '1px solid rgba(56, 189, 248, 0.25)',
+                  borderRadius: 12,
+                  padding: '0.85rem 1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '0.25rem'
+                }}>
+                  <div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#0369a1', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span>✨ AI Background Remover</span>
+                      <span style={{ fontSize: '0.65rem', background: '#38bdf8', color: '#fff', padding: '1px 5px', borderRadius: 4, textTransform: 'uppercase', fontWeight: 900 }}>3D Effect</span>
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: '#0284c7', marginTop: 2, fontFamily: 'Inter, sans-serif' }}>
+                      Automatically isolate the person on upload
+                    </div>
+                  </div>
+                  <input 
+                    type="checkbox"
+                    checked={autoRemoveBg}
+                    onChange={e => setAutoRemoveBg(e.target.checked)}
+                    style={{
+                      width: 18,
+                      height: 18,
+                      accentColor: '#38bdf8',
+                      cursor: 'pointer'
+                    }}
+                  />
+                </div>
+                {/* Premium Quality Selector */}
+                <div style={{
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 12,
+                  padding: '0.85rem 1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '0.25rem'
+                }}>
+                  <div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', fontFamily: 'Inter, sans-serif' }}>Upload Quality</div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: 2, fontFamily: 'Inter, sans-serif' }}>
+                      {qualityMode === '4k' ? '✨ Ultra HD 4K Crisp (2560px)' : '⚡ Standard Mobile (600px)'}
+                    </div>
+                  </div>
+                  
+                  <div style={{ display: 'flex', gap: 4, background: '#e2e8f0', borderRadius: 8, padding: 3 }}>
+                    <button
+                      type="button"
+                      onClick={() => setQualityMode('standard')}
+                      style={{
+                        padding: '0.35rem 0.65rem',
+                        borderRadius: 6,
+                        border: 'none',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        background: qualityMode === 'standard' ? '#fff' : 'transparent',
+                        color: qualityMode === 'standard' ? '#0f172a' : '#64748b',
+                        boxShadow: qualityMode === 'standard' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                        transition: 'all 0.15s',
+                        fontFamily: 'Inter, sans-serif'
+                      }}
+                    >
+                      Standard
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setQualityMode('4k')}
+                      style={{
+                        padding: '0.35rem 0.65rem',
+                        borderRadius: 6,
+                        border: 'none',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        background: qualityMode === '4k' ? 'linear-gradient(135deg, #00f5ff, #8b5cf6)' : 'transparent',
+                        color: qualityMode === '4k' ? '#fff' : '#64748b',
+                        boxShadow: qualityMode === '4k' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                        transition: 'all 0.15s',
+                        fontFamily: 'Inter, sans-serif'
+                      }}
+                    >
+                      🔥 Ultra HD 4K
+                    </button>
+                  </div>
+                </div>
+
+                {/* 3 Option Grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+                  
+                  {/* Gallery option */}
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '1.25rem 0.5rem',
+                      borderRadius: 12,
+                      border: '1px solid #e5e7eb',
+                      background: '#f9fafb',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      fontFamily: 'Inter, sans-serif'
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = '#3b82f6'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                  >
+                    <span style={{ fontSize: '1.8rem' }}>📂</span>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#374151' }}>Gallery / File</span>
+                  </button>
+
+                  {/* Camera option */}
+                  <button
+                    type="button"
+                    onClick={startCamera}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '1.25rem 0.5rem',
+                      borderRadius: 12,
+                      border: '1px solid #e5e7eb',
+                      background: '#f9fafb',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      fontFamily: 'Inter, sans-serif'
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#ecfdf5'; e.currentTarget.style.borderColor = '#10b981'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                  >
+                    <span style={{ fontSize: '1.8rem' }}>📸</span>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#374151' }}>Camera</span>
+                  </button>
+
+                  {/* URL option */}
+                  <button
+                    type="button"
+                    onClick={() => { setUrlInputActive(true); setErrorMessage(''); }}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '1.25rem 0.5rem',
+                      borderRadius: 12,
+                      border: '1px solid #e5e7eb',
+                      background: '#f9fafb',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      fontFamily: 'Inter, sans-serif'
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#f5f3ff'; e.currentTarget.style.borderColor = '#8b5cf6'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                  >
+                    <span style={{ fontSize: '1.8rem' }}>🔗</span>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#374151' }}>Web URL</span>
+                  </button>
+
+                </div>
+
+                {/* Web URL input field drawer */}
+                {urlInputActive && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, borderTop: '1px solid #f3f4f6', paddingTop: '1rem', marginTop: '0.5rem' }}>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#4b5563' }}>Paste Image Web Address</label>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <input 
+                        type="url" 
+                        placeholder="https://example.com/image.jpg" 
+                        value={tempUrl} 
+                        onChange={e => setTempUrl(e.target.value)} 
+                        style={{
+                          flex: 1,
+                          padding: '0.55rem 0.8rem',
+                          borderRadius: 8,
+                          border: '1px solid #d1d5db',
+                          fontSize: '0.85rem',
+                          outline: 'none',
+                          fontFamily: 'Inter, sans-serif'
+                        }}
+                      />
+                      <button 
+                        type="button"
+                        onClick={handleUrlSubmit}
+                        style={{
+                          padding: '0.55rem 1rem',
+                          background: '#00f5ff',
+                          color: '#050816',
+                          border: 'none',
+                          borderRadius: 8,
+                          fontWeight: 700,
+                          fontSize: '0.85rem',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Live Camera Interface */
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem' }}>
+                <div style={{
+                  width: '100%',
+                  aspectRatio: '4/3',
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  background: '#000',
+                  position: 'relative',
+                  border: '2px solid #10b981'
+                }}>
+                  <video 
+                    ref={videoRef} 
+                    autoPlay 
+                    playsInline 
+                    muted 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                  />
+                  
+                  {/* Cameraman viewfinder overlay grid */}
+                  <div style={{ position: 'absolute', inset: 0, border: '1px solid rgba(255,255,255,0.15)', pointerEvents: 'none' }} />
+                  <div style={{ position: 'absolute', top: '33.33%', left: 0, right: 0, borderBottom: '1px dashed rgba(255,255,255,0.15)', pointerEvents: 'none' }} />
+                  <div style={{ position: 'absolute', top: '66.66%', left: 0, right: 0, borderBottom: '1px dashed rgba(255,255,255,0.15)', pointerEvents: 'none' }} />
+                  <div style={{ position: 'absolute', left: '33.33%', top: 0, bottom: 0, borderRight: '1px dashed rgba(255,255,255,0.15)', pointerEvents: 'none' }} />
+                  <div style={{ position: 'absolute', left: '66.66%', top: 0, bottom: 0, borderRight: '1px dashed rgba(255,255,255,0.15)', pointerEvents: 'none' }} />
+                  
+                  <div style={{
+                    position: 'absolute',
+                    top: 12,
+                    right: 12,
+                    background: 'rgba(239, 68, 68, 0.8)',
+                    color: '#fff',
+                    padding: '0.2rem 0.5rem',
+                    borderRadius: 6,
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.05em',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4
+                  }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#fff', display: 'inline-block', animation: 'pulse-ring 1s infinite' }} />
+                    LIVE CAMERA
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
+                  <button 
+                    type="button"
+                    onClick={stopCamera}
+                    style={{
+                      flex: 1,
+                      padding: '0.65rem',
+                      borderRadius: 8,
+                      border: '1px solid #d1d5db',
+                      background: '#fff',
+                      color: '#374151',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={capturePhoto}
+                    style={{
+                      flex: 2,
+                      padding: '0.65rem',
+                      borderRadius: 8,
+                      border: 'none',
+                      background: '#10b981',
+                      color: '#fff',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6
+                    }}
+                  >
+                    📸 Take Photo
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Custom Keyframe Animations */}
+            <style dangerouslySetInnerHTML={{__html: `
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+              @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+              }
+              @keyframes pulse-ring {
+                0% { opacity: 0.4; transform: scale(0.95); }
+                50% { opacity: 1; transform: scale(1.05); }
+                100% { opacity: 0.4; transform: scale(0.95); }
+              }
+            `}} />
+
+            {/* AI Processing Overlay */}
+            {processing && (
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'rgba(255, 255, 255, 0.95)',
+                borderRadius: 20,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 16,
+                zIndex: 10000,
+                animation: 'fadeIn 0.2s ease-out'
+              }}>
+                <div style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: '50%',
+                  border: '4px solid #e2e8f0',
+                  borderTop: '4px solid #38bdf8',
+                  animation: 'spin 0.8s linear infinite'
+                }} />
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '1rem', fontFamily: 'Inter, sans-serif' }}>Processing Image...</div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>{progressMsg}</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

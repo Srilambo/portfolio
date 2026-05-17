@@ -20,7 +20,7 @@ export default function Skills({ skills }: { skills: Skill[] }) {
         style={{ textAlign: 'center', marginBottom: '4rem' }}
       >
         <h2 className="section-heading">My <span className="gradient-text">Skills</span></h2>
-        <div style={{ width: 60, h: 4, background: 'var(--gradient)', margin: '1rem auto' }} />
+        <div style={{ width: 60, height: 4, background: 'var(--gradient)', margin: '1rem auto' }} />
       </motion.div>
 
       {/* Tabs */}
@@ -42,7 +42,7 @@ export default function Skills({ skills }: { skills: Skill[] }) {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', lg: '1fr 1fr' }}>
+      <div className="skills-grid">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {filtered.map((skill, i) => (
             <SkillBar key={skill.name} skill={skill} index={i} />

@@ -1,92 +1,127 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-
 import { getApiUrl } from '../utils/api';
 
 export default function AdminLogin() {
   const { login } = useAuth();
   const navigate  = useNavigate();
-  const [email, setEmail]       = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  // Handle OAuth Callbacks
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const state = urlParams.get('state');
+    
+    if (code) {
+      handleOAuthCallback(code, state);
+    }
+  }, []);
+
+  const handleOAuthCallback = async (code: string, state: string | null) => {
     setLoading(true);
+    setError('');
     try {
-      const res = await fetch(getApiUrl('/api/auth/login'), {
+      const provider = state === 'google' ? 'google' : 'github';
+      const res = await fetch(getApiUrl(`/api/auth/${provider}/callback`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ code }),
       });
-      if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Invalid credentials'); }
+      
+      if (!res.ok) {
+        const d = await res.json();
+        const msg = d.details ? `${d.error}: ${d.details}` : (d.error || `${provider} Auth failed`);
+        throw new Error(msg);
+      }
+      
       const { token } = await res.json();
       login(token);
-      navigate('/admin/dashboard', { replace: true });
+      navigate('/admin', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
+      // Clean URL hash but keep the path
+      window.history.replaceState({}, document.title, window.location.pathname + window.location.hash.split('?')[0]);
     } finally {
       setLoading(false);
     }
   };
 
-  const inp: React.CSSProperties = {
-    width: '100%', padding: '0.75rem 1rem', borderRadius: 8,
-    border: '1px solid #e5e7eb', fontSize: '0.95rem', outline: 'none',
-    transition: 'border-color 0.2s, box-shadow 0.2s', fontFamily: 'Inter, sans-serif',
-    boxSizing: 'border-box',
+  const handleGoogleLogin = () => {
+    window.location.href = getApiUrl('/api/auth/google');
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif' }}>
-      <div style={{ width: 400, background: '#fff', borderRadius: 16, padding: '2.5rem', boxShadow: '0 4px 40px rgba(0,0,0,0.08)' }}>
-        {/* Logo */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: 8 }}>🔐</div>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#111827', margin: 0 }}>Admin Login</h1>
-          <p style={{ color: '#6b7280', fontSize: '0.85rem', marginTop: 4 }}>Portfolio CMS</p>
+    <div style={{ 
+      minHeight: '100vh', 
+      background: '#020617', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      fontFamily: "'Inter', sans-serif",
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      {/* Background blobs */}
+      <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '40%', height: '40%', background: 'rgba(56, 189, 248, 0.15)', filter: 'blur(100px)', borderRadius: '50%' }} />
+      <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '40%', height: '40%', background: 'rgba(129, 140, 248, 0.15)', filter: 'blur(100px)', borderRadius: '50%' }} />
+
+      <div style={{ 
+        width: 420, 
+        background: 'rgba(15, 23, 42, 0.6)', 
+        backdropFilter: 'blur(20px)',
+        borderRadius: 24, 
+        padding: '3.5rem 3rem', 
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+        zIndex: 1
+      }}>
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+          <div style={{ 
+            width: 64, height: 64, background: 'linear-gradient(135deg, #38bdf8, #818cf8)', 
+            borderRadius: 16, margin: '0 auto 1.5rem', display: 'flex', alignItems: 'center', 
+            justifyContent: 'center', fontSize: '1.75rem', boxShadow: '0 10px 15px -3px rgba(56, 189, 248, 0.3)'
+          }}>
+            🔐
+          </div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#f8fafc', margin: 0, letterSpacing: '-0.02em' }}>Admin Access</h1>
+          <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginTop: 8 }}>Authorized Entry Only</p>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label style={{ display: 'block', fontWeight: 600, fontSize: '0.8rem', color: '#374151', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Email</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
-              placeholder="admin@srilambo.com" style={inp}
-              onFocus={e => { e.currentTarget.style.borderColor = '#00f5ff'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0,245,255,0.15)'; }}
-              onBlur={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.boxShadow = 'none'; }}
-            />
+        {error && (
+          <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: 12, padding: '0.75rem 1rem', color: '#f87171', fontSize: '0.875rem', textAlign: 'center', marginBottom: '1.5rem' }}>
+            ⚠️ {error}
           </div>
-          <div>
-            <label style={{ display: 'block', fontWeight: 600, fontSize: '0.8rem', color: '#374151', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Password</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} required
-              placeholder="••••••••" style={inp}
-              onFocus={e => { e.currentTarget.style.borderColor = '#00f5ff'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0,245,255,0.15)'; }}
-              onBlur={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.boxShadow = 'none'; }}
-            />
-          </div>
-          {error && (
-            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '0.65rem 1rem', color: '#ef4444', fontSize: '0.875rem' }}>
-              ❌ {error}
-            </div>
-          )}
-          <button type="submit" disabled={loading}
-            style={{
-              padding: '0.8rem', borderRadius: 8, border: 'none',
-              background: loading ? '#a5f3fc' : '#00f5ff',
-              color: '#050816', fontWeight: 700, fontSize: '1rem',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              fontFamily: 'Inter, sans-serif', transition: 'background 0.2s',
-            }}
-          >
-            {loading ? 'Signing in...' : 'Sign In →'}
-          </button>
-        </form>
+        )}
 
-        <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-          <a href="/" style={{ color: '#9ca3af', fontSize: '0.8rem', textDecoration: 'none' }}>← Back to Portfolio</a>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <button onClick={handleGoogleLogin} disabled={loading} style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', padding: '1rem', 
+            borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.03)',
+            color: '#f8fafc', fontWeight: 700, fontSize: '1.05rem', cursor: loading ? 'not-allowed' : 'pointer', transition: 'all 0.2s',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          }}
+          onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+          onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
+            <svg height="24" width="24" viewBox="0 0 48 48">
+              <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+              <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+              <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+              <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C40.483,35.58,44,30.222,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+            </svg>
+            Sign in with Google
+          </button>
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+          <a href="/" style={{ color: '#64748b', fontSize: '0.85rem', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s' }}
+             onMouseEnter={e => e.currentTarget.style.color = '#38bdf8'}
+             onMouseLeave={e => e.currentTarget.style.color = '#64748b'}>
+            ← Back to Portfolio
+          </a>
         </div>
       </div>
     </div>

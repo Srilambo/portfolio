@@ -4,13 +4,25 @@ import { useContactForm } from '../hooks/useContactForm';
 
 export default function Contact({ settings }: { settings: any }) {
   const [ref, isVisible] = useIntersection({ threshold: 0.1 });
-  const { form, loading, success, error, handleChange, handleSubmit } = useContactForm();
+  const { form, state: { loading, success, error }, handleChange, handleSubmit } = useContactForm();
 
-  const info = [
-    { icon: '📧', label: 'Email', value: settings?.email || 'hello@raavanaa.lk' },
-    { icon: '📍', label: 'Location', value: settings?.location || 'Colombo, Sri Lanka' },
-    { icon: '🤝', label: 'Availability', value: 'Open to Work', badge: true },
-  ];
+  const getWhatsAppLink = (input: string) => {
+    if (!input) return '#';
+    if (input.startsWith('http')) return input;
+    const cleaned = input.replace(/\D/g, '');
+    return `https://wa.me/${cleaned}`;
+  };
+
+  const getPhoneLink = (input: string) => {
+    if (!input) return '#';
+    const cleaned = input.replace(/[^0-9+]/g, '');
+    return `tel:${cleaned}`;
+  };
+
+  const getEmailLink = (input: string) => {
+    if (!input) return '#';
+    return `mailto:${input}`;
+  };
 
   return (
     <section id="contact" ref={ref} className="section-wrapper">
@@ -19,27 +31,86 @@ export default function Contact({ settings }: { settings: any }) {
         <p style={{ color: 'var(--text-secondary)', marginTop: '1rem' }}>Have a project in mind? Let's build something amazing together.</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', lg: '1fr 1.2fr', gap: '4rem' }}>
+      <div className="contact-grid">
         {/* Info Side */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={isVisible ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.8 }}
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            {info.map((item, i) => (
-              <div key={i} style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                <div style={{ width: 60, height: 60, borderRadius: 16, background: 'var(--card-glass)', border: '1px solid var(--border-glass)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
-                  {item.icon}
-                </div>
-                <div>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: 4 }}>{item.label}</div>
-                  <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    {item.value}
-                    {item.badge && <span style={{ background: '#10b981', color: '#fff', fontSize: '0.6rem', padding: '0.15rem 0.5rem', borderRadius: 99, textTransform: 'uppercase' }}>Available</span>}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
+            {[
+              { 
+                icon: '📧', 
+                label: 'Email', 
+                actionText: 'Send Mail',
+                href: getEmailLink(settings?.email || 'srilambotharan@gmail.com'),
+                active: true 
+              },
+              { 
+                icon: '📞', 
+                label: 'Call Me', 
+                actionText: 'Phone Call',
+                href: getPhoneLink(settings?.phone || ''),
+                active: !!settings?.phone 
+              },
+              { 
+                icon: '💬', 
+                label: 'WhatsApp', 
+                actionText: 'Chat Now',
+                href: getWhatsAppLink(settings?.whatsapp || settings?.phone || ''),
+                active: !!settings?.whatsapp || !!settings?.phone 
+              },
+            ].map((item, i) => (
+              item.active && (
+                <a 
+                  key={i} 
+                  href={item.href}
+                  style={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    padding: '1.75rem 1rem',
+                    borderRadius: 20, 
+                    background: 'var(--card-glass)', 
+                    border: '1px solid var(--border-glass)', 
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    textAlign: 'center',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.transform = 'translateY(-5px)';
+                    e.currentTarget.style.borderColor = 'var(--accent)';
+                    e.currentTarget.style.background = 'rgba(56, 189, 248, 0.08)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.borderColor = 'var(--border-glass)';
+                    e.currentTarget.style.background = 'var(--card-glass)';
+                  }}
+                >
+                  <div style={{ 
+                    width: 54, 
+                    height: 54, 
+                    borderRadius: '50%', 
+                    background: 'var(--gradient)',
+                    color: 'var(--bg)',
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    fontSize: '1.75rem',
+                    marginBottom: '0.85rem',
+                    boxShadow: '0 8px 16px rgba(56, 189, 248, 0.25)'
+                  }}>
+                    {item.icon}
                   </div>
-                </div>
-              </div>
+                  <div style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '0.9rem' }}>{item.label}</div>
+                  <div style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '0.65rem', marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{item.actionText}</div>
+                </a>
+              )
             ))}
           </div>
           
