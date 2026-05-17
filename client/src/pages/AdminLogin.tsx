@@ -33,7 +33,8 @@ export default function AdminLogin() {
       
       if (!res.ok) {
         const d = await res.json();
-        throw new Error(d.error || `${provider} Auth failed`);
+        const msg = d.details ? `${d.error}: ${d.details}` : (d.error || `${provider} Auth failed`);
+        throw new Error(msg);
       }
       
       const { token } = await res.json();

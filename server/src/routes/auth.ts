@@ -8,7 +8,8 @@ const router = Router();
 // Google Auth
 router.get('/google', (req, res) => {
   const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientUrl = process.env.CLIENT_URL || `${req.protocol}://${req.get('host')}`;
+  let clientUrl = process.env.CLIENT_URL || `${req.protocol}://${req.get('host')}`;
+  if (clientUrl.endsWith('/')) clientUrl = clientUrl.slice(0, -1);
   const redirectUri = `${clientUrl}/admin/login`;
   const scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
   
@@ -26,7 +27,9 @@ router.post('/google/callback', async (req, res) => {
   if (!code) return res.status(400).json({ error: 'No code provided' });
 
   try {
-    const clientUrl = process.env.CLIENT_URL || `${req.protocol}://${req.get('host')}`;
+    let clientUrl = process.env.CLIENT_URL || `${req.protocol}://${req.get('host')}`;
+    if (clientUrl.endsWith('/')) clientUrl = clientUrl.slice(0, -1);
+    
     // 1. Exchange code for tokens
     const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
@@ -40,8 +43,8 @@ router.post('/google/callback', async (req, res) => {
       }),
     });
 
-    const tokenData = await tokenRes.json() as { access_token: string; error?: string };
-    if (tokenData.error) throw new Error(tokenData.error);
+    const tokenData = await tokenRes.json() as { access_token: string; error?: string; error_description?: string };
+    if (tokenData.error) throw new Error(tokenData.error_description || tokenData.error);
 
     // 2. Get user info
     const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
@@ -57,7 +60,10 @@ router.post('/google/callback', async (req, res) => {
     res.json({ token });
   } catch (err: any) {
     console.error('Google Auth Error:', err);
-    res.status(500).json({ error: 'Google Authentication failed' });
+    res.status(500).json({
+      error: 'Google Authentication failed',
+      details: err instanceof Error ? err.message : String(err)
+    });
   }
 });
 
