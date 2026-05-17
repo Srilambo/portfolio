@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -50,24 +51,58 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Floating Bottom Nav */}
+      {/* Mobile Floating Action Button & Menu */}
       <div className="mobile-floating-nav" style={{
-        position: 'fixed', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)',
-        background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(255,255,255,0.15)', borderRadius: '999px',
-        padding: '0.5rem 1.5rem', display: 'flex', gap: '1.5rem', zIndex: 1000,
-        boxShadow: '0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(56, 189, 248, 0.15)',
-        alignItems: 'center', justifyContent: 'center', width: 'max-content'
+        position: 'fixed', bottom: '2rem', right: '1.5rem', zIndex: 1000,
+        display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1rem'
       }}>
-        {navItems.map(item => (
-          <a key={item} href={`#${item.toLowerCase()}`} style={{
-            color: 'var(--text-primary)', textDecoration: 'none',
-            fontSize: '0.8rem', fontWeight: 600, padding: '0.4rem 0.2rem',
-            letterSpacing: '0.02em', opacity: 0.8
+        {/* The Menu Items (Hidden when closed) */}
+        <div style={{
+          display: 'flex', flexDirection: 'column', gap: '0.8rem',
+          opacity: menuOpen ? 1 : 0,
+          pointerEvents: menuOpen ? 'auto' : 'none',
+          transform: menuOpen ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.9)',
+          transformOrigin: 'bottom right',
+          transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+          background: 'rgba(15, 23, 42, 0.95)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255,255,255,0.15)',
+          borderRadius: '1.2rem',
+          padding: '1.5rem',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
+        }}>
+          {navItems.map(item => (
+            <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)} style={{
+              color: 'var(--text-primary)', textDecoration: 'none',
+              fontSize: '1.1rem', fontWeight: 600, textAlign: 'right'
+            }}>
+              {item}
+            </a>
+          ))}
+          <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.1)', margin: '0.5rem 0' }} />
+          <a href="#contact" onClick={() => setMenuOpen(false)} style={{
+            color: 'var(--accent)', textDecoration: 'none',
+            fontSize: '1.1rem', fontWeight: 700, textAlign: 'right'
           }}>
-            {item}
+            Hire Me
           </a>
-        ))}
+        </div>
+
+        {/* The Toggle Button */}
+        <button 
+          onClick={() => setMenuOpen(!menuOpen)}
+          style={{
+            width: '60px', height: '60px', borderRadius: '50%',
+            background: 'var(--gradient)', border: 'none',
+            color: 'var(--bg)', fontSize: '1.5rem', display: 'flex', 
+            justifyContent: 'center', alignItems: 'center',
+            cursor: 'pointer', boxShadow: '0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(56, 189, 248, 0.3)',
+            transition: 'transform 0.3s ease',
+            transform: menuOpen ? 'rotate(90deg)' : 'rotate(0deg)'
+          }}
+        >
+          {menuOpen ? '✕' : '☰'}
+        </button>
       </div>
       
       <style dangerouslySetInnerHTML={{__html: `
