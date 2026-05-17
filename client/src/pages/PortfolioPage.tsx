@@ -11,6 +11,7 @@ import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import ScrollProgress from '../components/ScrollProgress';
 import CursorGlow from '../components/CursorGlow';
+import LoadingScreen from '../components/LoadingScreen';
 
 import { getApiUrl } from '../utils/api';
 
@@ -38,16 +39,7 @@ export default function PortfolioPage() {
     fetchData();
   }, []);
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#050816', color: '#00f5ff' }}>
-        <div style={{ fontSize: '1.2rem', fontWeight: 700, letterSpacing: '0.1em', animation: 'pulse 1.5s infinite' }}>
-          LOADING PORTFOLIO...
-        </div>
-        <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }`}</style>
-      </div>
-    );
-  }
+
 
   if (error) {
     return (
@@ -82,20 +74,26 @@ export default function PortfolioPage() {
 
   return (
     <>
-      <ScrollProgress />
-      <CursorGlow />
-      <Navbar />
-      <main>
-        <Hero settings={settings} />
-        <About settings={settings} />
-        <Services settings={settings} />
-        <Skills skills={skills} />
-        <Projects projects={projects} />
-        <Experience experience={experience} />
-        <Blogs blogs={blogs} />
-        <Contact settings={settings} />
-      </main>
-      <Footer settings={settings} />
+      <LoadingScreen isApiLoading={loading} />
+      
+      {!loading && data && (
+        <>
+          <ScrollProgress />
+          <CursorGlow />
+          <Navbar />
+          <main>
+            <Hero settings={settings} />
+            <About settings={settings} />
+            <Services settings={settings} />
+            <Skills skills={skills} />
+            <Projects projects={projects} />
+            <Experience experience={experience} />
+            <Blogs blogs={blogs} />
+            <Contact settings={settings} />
+          </main>
+          <Footer settings={settings} />
+        </>
+      )}
     </>
   );
 }
