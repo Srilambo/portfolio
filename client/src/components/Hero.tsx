@@ -209,11 +209,72 @@ export default function Hero({ settings }: { settings: any }) {
             fontSize: '1.1rem', 
             lineHeight: 1.8, 
             maxWidth: '500px',
-            marginBottom: '3rem'
+            marginBottom: '2.5rem'
           }}>
             {bio}
           </p>
-          
+
+          <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', marginBottom: '3rem' }}>
+            <a 
+              href="#contact" 
+              style={{
+                background: 'var(--gradient)',
+                color: 'white',
+                padding: '0.9rem 2.2rem',
+                borderRadius: '50px',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                textDecoration: 'none',
+                boxShadow: '0 8px 24px rgba(56, 189, 248, 0.3)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'translateY(-3px)';
+                e.currentTarget.style.boxShadow = '0 12px 28px rgba(56, 189, 248, 0.45)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 8px 24px rgba(56, 189, 248, 0.3)';
+              }}
+            >
+              Hire Me
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+            <a 
+              href="#projects" 
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                padding: '0.9rem 2.2rem',
+                borderRadius: '50px',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                textDecoration: 'none',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'translateY(-3px)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                e.currentTarget.style.borderColor = 'var(--accent)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+            >
+              View Work
+            </a>
+          </div>
 
         </motion.div>
 

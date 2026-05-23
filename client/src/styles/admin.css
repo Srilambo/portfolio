@@ -1,22 +1,369 @@
-/* Admin-only styles — white theme override */
-.admin-layout {
-  font-family: 'Inter', sans-serif;
-  background: #f9fafb;
-  min-height: 100vh;
-  color: #111827;
+/* ================================================================
+   Admin Panel — Premium Dark Glassmorphism Theme
+   Matches the portfolio dark aesthetic with full animation support
+   ================================================================ */
+
+/* ── Design Tokens ────────────────────────────────────────────── */
+:root {
+  --adm-bg:            #020617;
+  --adm-bg-2:          #0f172a;
+  --adm-bg-3:          #1e293b;
+  --adm-glass:         rgba(15, 23, 42, 0.65);
+  --adm-glass-hover:   rgba(30, 41, 59, 0.8);
+  --adm-border:        rgba(255, 255, 255, 0.06);
+  --adm-border-accent: rgba(56, 189, 248, 0.22);
+  --adm-accent:        #38bdf8;
+  --adm-accent-2:      #818cf8;
+  --adm-gradient:      linear-gradient(135deg, #38bdf8, #818cf8);
+  --adm-text:          #f8fafc;
+  --adm-text-2:        #94a3b8;
+  --adm-text-3:        #475569;
+  --adm-danger:        #f87171;
+  --adm-success:       #34d399;
+  --adm-warning:       #fbbf24;
 }
 
-/* Override global dark scrollbar in admin */
-.admin-layout ::-webkit-scrollbar { width: 6px; }
-.admin-layout ::-webkit-scrollbar-track { background: #f9fafb; }
-.admin-layout ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
-.admin-layout ::-webkit-scrollbar-thumb:hover { background: #00f5ff; }
+/* ── Global Overrides inside Admin ──────────────────────────── */
+.admin-layout {
+  font-family: 'Inter', sans-serif;
+  background: var(--adm-bg);
+  min-height: 100vh;
+  color: var(--adm-text);
+}
 
-/* Admin table hover rows */
-.admin-table tr:hover td { background: #f9fafb; }
+/* Dark scrollbar everywhere (not just admin-layout) */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--adm-bg); }
+::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--adm-accent); }
 
-/* Admin input focus */
+/* ── Admin Header ─────────────────────────────────────────── */
+.admin-header {
+  background: rgba(2, 6, 23, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--adm-border);
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 0 2.5rem;
+  transition: padding 0.2s ease;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+}
+
+/* ── Admin Main ───────────────────────────────────────────── */
+.admin-main {
+  flex: 1;
+  padding: 2.5rem;
+  overflow-y: auto;
+  background: var(--adm-bg);
+  background-image:
+    radial-gradient(ellipse at 15% 15%, rgba(56, 189, 248, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 85%, rgba(129, 140, 248, 0.05) 0%, transparent 55%);
+  min-height: calc(100vh - 70px);
+  transition: padding 0.2s ease;
+}
+
+/* ── Dashboard Quick-Action Grid ──────────────────────────── */
+.dashboard-home-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+/* ── Glass Card ───────────────────────────────────────────── */
+.adm-card {
+  background: var(--adm-glass);
+  border: 1px solid var(--adm-border);
+  border-radius: 18px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: adm-fade-in 0.4s ease forwards;
+}
+.adm-card:hover {
+  border-color: var(--adm-border-accent);
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.08), 0 8px 32px rgba(0,0,0,0.3);
+  transform: translateY(-2px);
+}
+
+/* ── Admin Inputs ─────────────────────────────────────────── */
+.admin-input {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--adm-border);
+  color: var(--adm-text);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
 .admin-input:focus {
-  border-color: #00f5ff;
-  box-shadow: 0 0 0 3px rgba(0, 245, 255, 0.15);
+  border-color: var(--adm-accent);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+}
+.admin-input::placeholder { color: var(--adm-text-3); }
+
+/* ── Admin Table ──────────────────────────────────────────── */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.admin-table th {
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--adm-text-2);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.9rem 1.25rem;
+  text-align: left;
+  border-bottom: 1px solid var(--adm-border);
+}
+.admin-table td {
+  padding: 1rem 1.25rem;
+  color: var(--adm-text);
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--adm-border);
+  transition: background 0.15s;
+}
+.admin-table tr:hover td {
+  background: rgba(56, 189, 248, 0.03);
+}
+
+/* ── Buttons ──────────────────────────────────────────────── */
+.adm-btn-primary {
+  background: var(--adm-gradient);
+  color: #020617;
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 1.4rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+  font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.adm-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.35);
+  opacity: 0.92;
+}
+.adm-btn-primary:active { transform: translateY(0); }
+
+.adm-btn-secondary {
+  background: var(--adm-glass);
+  color: var(--adm-text);
+  border: 1px solid var(--adm-border);
+  border-radius: 10px;
+  padding: 0.65rem 1.4rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.22s;
+  font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.adm-btn-secondary:hover {
+  border-color: var(--adm-accent);
+  color: var(--adm-accent);
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.adm-btn-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--adm-danger);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.adm-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: translateY(-1px);
+}
+
+/* ── Badges / Pills ───────────────────────────────────────── */
+.adm-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 99px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.adm-badge-success {
+  background: rgba(52, 211, 153, 0.12);
+  color: var(--adm-success);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+}
+.adm-badge-warning {
+  background: rgba(251, 191, 36, 0.12);
+  color: var(--adm-warning);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+}
+.adm-badge-danger {
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--adm-danger);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+}
+.adm-badge-info {
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--adm-accent);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+/* ── Section Headers ──────────────────────────────────────── */
+.adm-section-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--adm-text);
+  letter-spacing: -0.02em;
+  margin: 0 0 0.25rem;
+}
+.adm-section-subtitle {
+  font-size: 0.875rem;
+  color: var(--adm-text-2);
+  margin: 0;
+}
+
+/* ── Divider ──────────────────────────────────────────────── */
+.adm-divider {
+  height: 1px;
+  background: var(--adm-border);
+  margin: 1.5rem 0;
+}
+
+/* ── Icon Sidebar Strip ───────────────────────────────────── */
+.admin-sidebar-icon-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 0;
+  gap: 0.25rem;
+  flex: 1;
+  overflow-y: auto;
+}
+.admin-sidebar-icon-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #64748b;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+.admin-sidebar-icon-btn:hover,
+.admin-sidebar-icon-btn.active {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  transform: scale(1.08);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.15);
+}
+.admin-sidebar-icon-btn .icon-tooltip {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) scale(0.85);
+  background: rgba(2, 6, 23, 0.95);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  color: #f8fafc;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 200;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+.admin-sidebar-icon-btn:hover .icon-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+/* ── Stats Card ───────────────────────────────────────────── */
+.adm-stat-card {
+  background: var(--adm-glass);
+  border: 1px solid var(--adm-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.adm-stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--adm-gradient);
+  opacity: 0;
+  transition: opacity 0.3s;
+  border-radius: inherit;
+}
+.adm-stat-card:hover {
+  border-color: var(--adm-border-accent);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(56, 189, 248, 0.1);
+}
+
+/* ── Animations ───────────────────────────────────────────── */
+@keyframes adm-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes adm-slide-in {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes adm-pulse-dot {
+  0%, 100% { box-shadow: 0 0 6px rgba(52, 211, 153, 0.5); }
+  50%       { box-shadow: 0 0 16px rgba(52, 211, 153, 1); }
+}
+@keyframes adminFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.adm-animate { animation: adm-fade-in 0.4s ease forwards; }
+.adm-pulse-dot { animation: adm-pulse-dot 2s ease infinite; }
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 1023px) and (min-width: 640px) {
+  .admin-header { padding: 0 1.5rem; }
+  .admin-main   { padding: 1.5rem; }
+  .dashboard-home-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 639px) {
+  .admin-header { padding: 0 1rem; height: 60px; }
+  .admin-main   { padding: 1rem; }
+  .dashboard-home-grid { grid-template-columns: 1fr; }
 }

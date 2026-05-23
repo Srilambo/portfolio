@@ -6,7 +6,7 @@
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
     "dev:client": "npm run dev --prefix client",
     "dev:server": "npm run dev --prefix server",
-    "build": "npm install --prefix client && npm install --prefix server && npm run build --prefix client && (rm -rf public || true) && cp -r client/dist public"
+    "build": "npm install --prefix client && npm install --prefix server && npm run build --prefix client && node -e \"const fs = require('fs'); if (fs.existsSync('public')) fs.rmSync('public', {recursive:true, force:true}); fs.cpSync('client/dist', 'public', {recursive:true});\""
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

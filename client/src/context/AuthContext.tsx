@@ -11,10 +11,17 @@ interface AuthCtx {
 const AuthContext = createContext<AuthCtx | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(() => sessionStorage.getItem('admin_token'));
 
-  const login  = useCallback((t: string) => setToken(t), []);
-  const logout = useCallback(() => setToken(null), []);
+  const login  = useCallback((t: string) => {
+    sessionStorage.setItem('admin_token', t);
+    setToken(t);
+  }, []);
+  
+  const logout = useCallback(() => {
+    sessionStorage.removeItem('admin_token');
+    setToken(null);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ token, isAuthenticated: !!token, login, logout }}>

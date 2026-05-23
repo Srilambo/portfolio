@@ -19,7 +19,12 @@ export default function SkillBar({ skill, index }: Props) {
     <div ref={ref} style={{ marginBottom: '1.25rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
         <span style={{ color: '#f0f0f0', fontWeight: 600, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span>{skill.icon}</span> {skill.name}
+          {skill.icon.startsWith('data:image') || skill.icon.startsWith('http') || skill.icon.endsWith('.svg') || skill.icon.endsWith('.png') ? (
+            <img src={skill.icon} alt={skill.name} style={{ width: 22, height: 22, objectFit: 'contain' }} />
+          ) : (
+            <span style={{ fontSize: '1.2rem' }}>{skill.icon}</span>
+          )}
+          {skill.name}
         </span>
         <span style={{ color: '#00f5ff', fontSize: '0.85rem', fontWeight: 700 }}>{skill.level}%</span>
       </div>

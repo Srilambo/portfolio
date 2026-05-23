@@ -48,3 +48,26 @@ const DataStoreSchema = new Schema<IDataStore>({
 });
 
 export const DataStore: Model<IDataStore> = model<IDataStore>('DataStore', DataStoreSchema);
+
+// ── Review ──────────────────────────────────────────────────
+export interface IReview extends Document {
+  name: string;
+  email: string;
+  rating: number;
+  comment: string;
+  approved: boolean;
+  createdAt: Date;
+}
+
+const ReviewSchema = new Schema<IReview>(
+  {
+    name:    { type: String, required: true, maxlength: 100 },
+    email:   { type: String, required: true },
+    rating:  { type: Number, required: true, min: 1, max: 5 },
+    comment: { type: String, required: true, maxlength: 1000 },
+    approved: { type: Boolean, default: false },
+  },
+  { timestamps: { createdAt: 'createdAt', updatedAt: false } }
+);
+
+export const Review: Model<IReview> = model<IReview>('Review', ReviewSchema);

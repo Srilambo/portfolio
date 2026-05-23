@@ -10,7 +10,8 @@ import adminMessagesRouter  from './routes/adminMessages.js';
 import adminSettingsRouter  from './routes/adminSettings.js';
 import publicSettingsRouter from './routes/publicSettings.js';
 import publicDataRouter     from './routes/publicData.js';
-
+import reviewsRouter        from './routes/reviews.js';
+import adminReviewsRouter   from './routes/adminReviews.js';
 import { connectDB } from './db/db.js';
 
 const app = express();
@@ -45,9 +46,11 @@ app.use('/api/contact',          contactLimiter, contactRouter);
 app.use('/api/github',           githubRouter);
 app.use('/api/settings',         publicSettingsRouter);
 app.use('/api/data',             publicDataRouter);
+app.use('/api/reviews',          reviewsRouter);
 app.use('/api/admin',            adminDataRouter);
 app.use('/api/admin/messages',   adminMessagesRouter);
 app.use('/api/admin/settings',   adminSettingsRouter);
+app.use('/api/admin/reviews',    adminReviewsRouter);
 
 // ── Health check ───────────────────────────────────────────
 app.get('/api/health', (_req, res) =>

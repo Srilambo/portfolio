@@ -60,9 +60,45 @@ export default function SkillsAdmin() {
               const cc = catColors[s.category] ?? { bg: '#f9fafb', color: '#374151' };
               return (
                 <tr key={`${s.name}-${i}`} style={{ borderBottom: i < list.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
-                  <td style={{ padding: '0.85rem 1rem', fontSize: '1.2rem' }}>
-                    <input value={s.icon} onChange={e => update(s.name, { icon: e.target.value })}
-                      style={{ width: 44, textAlign: 'center', border: '1px solid #e5e7eb', borderRadius: 6, padding: '0.3rem', fontSize: '1.1rem' }} />
+                  <td style={{ padding: '0.85rem 1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <div style={{
+                        width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        border: '1px dashed #d1d5db', borderRadius: 6, background: '#f9fafb', position: 'relative', overflow: 'hidden'
+                      }}>
+                        {s.icon.startsWith('data:image') || s.icon.startsWith('http') || s.icon.endsWith('.svg') || s.icon.endsWith('.png') ? (
+                          <img src={s.icon} alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+                        ) : (
+                          <span style={{ fontSize: '1.5rem' }}>{s.icon}</span>
+                        )}
+                        <input type="file" accept="image/png, image/jpeg, image/svg+xml"
+                          onChange={e => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                              if (event.target?.result) {
+                                update(s.name, { icon: event.target.result as string });
+                              }
+                            };
+                            reader.readAsDataURL(file);
+                          }}
+                          style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', zIndex: 10 }}
+                          title="Upload Icon"
+                        />
+                      </div>
+                      {!s.icon.startsWith('data:image') && (
+                        <input value={s.icon} onChange={e => update(s.name, { icon: e.target.value })}
+                          placeholder="Emoji/URL Link"
+                          style={{ width: 140, border: '1px solid #e5e7eb', borderRadius: 6, padding: '0.4rem 0.5rem', fontSize: '0.8rem', fontFamily: 'Inter, sans-serif' }} />
+                      )}
+                      {s.icon.startsWith('data:image') && (
+                        <button onClick={() => update(s.name, { icon: '⭐' })}
+                          style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.75rem', padding: 0, fontFamily: 'Inter, sans-serif' }}>
+                          Clear
+                        </button>
+                      )}
+                    </div>
                   </td>
                   <td style={{ padding: '0.85rem 1rem' }}>
                     <input value={s.name} onChange={e => update(s.name, { name: e.target.value })}

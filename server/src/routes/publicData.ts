@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { Setting, DataStore } from '../db/schema.js';
+import { Setting, DataStore, Review } from '../db/schema.js';
 import { connectDB } from '../db/db.js';
 
 const router = Router();
@@ -22,6 +22,7 @@ router.get('/', async (_req, res) => {
     const experience = await getData('experience') ?? [];
     const blogs      = await getData('blogs')      ?? [];
     const services   = await getData('services')   ?? [];
+    const reviews    = await Review.find({ approved: true }).sort({ createdAt: -1 }).lean();
 
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.setHeader('Pragma', 'no-cache');
@@ -33,7 +34,8 @@ router.get('/', async (_req, res) => {
       skills,
       experience,
       blogs,
-      services
+      services,
+      reviews
     });
   } catch (err: any) {
     console.error('Data fetch error:', err);

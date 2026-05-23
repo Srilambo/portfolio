@@ -7,6 +7,7 @@ import Skills from '../components/Skills';
 import Projects from '../components/Projects';
 import Experience from '../components/Experience';
 import Blogs from '../components/Blogs';
+import Reviews from '../components/Reviews';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import ScrollProgress from '../components/ScrollProgress';
@@ -70,7 +71,7 @@ export default function PortfolioPage() {
     );
   }
 
-  const { settings = {}, projects = [], skills = [], experience = [], blogs = [], services = [] } = data || {};
+  const { settings = {}, projects = [], skills = [], experience = [], blogs = [], services = [], reviews = [] } = data || {};
 
   return (
     <>
@@ -89,6 +90,7 @@ export default function PortfolioPage() {
             <Projects projects={projects} />
             <Experience experience={experience} />
             <Blogs blogs={blogs} />
+            <Reviews reviews={reviews} />
             <Contact settings={settings} />
           </main>
           <Footer settings={settings} />
