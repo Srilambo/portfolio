@@ -8,6 +8,17 @@
     "dev:server": "npm run dev --prefix server",
     "build": "npm install --prefix client && npm install --prefix server && npm run build --prefix client && node -e \"const fs = require('fs'); if (fs.existsSync('public')) fs.rmSync('public', {recursive:true, force:true}); fs.cpSync('client/dist', 'public', {recursive:true});\""
   },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.0",
+    "nodemailer": "^6.9.13",
+    "zod": "^3.23.8"
+  },
   "devDependencies": {
     "concurrently": "^9.2.1"
   }
