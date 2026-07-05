@@ -16,6 +16,9 @@ import { connectDB } from './db/db.js';
 
 const app = express();
 
+// Trust reverse proxy (Vercel, Render, etc.) to get correct client IPs for rate limiting
+app.set('trust proxy', 1);
+
 // ── Database connection assurance (Serverless compatible) ──
 app.use(async (_req, _res, next) => {
   try {
