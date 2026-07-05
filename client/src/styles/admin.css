@@ -31,6 +31,13 @@
   color: var(--adm-text);
 }
 
+/* Prevent horizontal scroll / layout bleed on mobile */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+
 /* Dark scrollbar everywhere (not just admin-layout) */
 ::-webkit-scrollbar       { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--adm-bg); }
