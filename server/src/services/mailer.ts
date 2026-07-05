@@ -40,7 +40,7 @@ export async function sendContactEmail(data: ContactData): Promise<void> {
 
   // Auto-reply to sender
   await transporter.sendMail({
-    from:    `"Raavanaa" <${process.env.SMTP_USER}>`,
+    from:    `"Lambo Portfolio" <${process.env.SMTP_USER}>`,
     to:      data.email,
     subject: `Thanks for reaching out, ${data.name}!`,
     html: `
@@ -57,7 +57,7 @@ export async function sendContactEmail(data: ContactData): Promise<void> {
           <p style="color:#d1d5db">In the meantime, feel free to browse my projects at 
             <a href="${process.env.CLIENT_URL}" style="color:#00f5ff">${process.env.CLIENT_URL}</a>.
           </p>
-          <p style="color:#9ca3af;margin-top:2rem">Best regards,<br><strong style="color:#00f5ff">Raavanaa</strong></p>
+          <p style="color:#9ca3af;margin-top:2rem">Best regards,<br><strong style="color:#00f5ff">Lambo</strong></p>
         </div>
       </div>`,
   });
