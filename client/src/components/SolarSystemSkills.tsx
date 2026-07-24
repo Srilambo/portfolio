@@ -51,8 +51,21 @@ export default function SolarSystemSkills({ skills }: { skills: Skill[] }) {
 
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
-  // sphere radius in px – responsive
-  const R = 210;
+  // sphere radius in px – responsive state
+  const [R, setR] = useState(() => (typeof window !== 'undefined' && window.innerWidth < 480 ? 115 : typeof window !== 'undefined' && window.innerWidth < 768 ? 140 : 195));
+
+  useEffect(() => {
+    const handleResize = () => {
+      const w = window.innerWidth;
+      if (w < 480) setR(115);
+      else if (w < 768) setR(140);
+      else if (w < 1024) setR(165);
+      else setR(195);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // evenly-spaced sphere points
   const basePoints = useMemo(() => fibonacciSphere(skills.length), [skills.length]);
@@ -82,10 +95,14 @@ export default function SolarSystemSkills({ skills }: { skills: Skill[] }) {
 
       ctx.clearRect(0, 0, W, H);
 
+      // calculate safe radius so outermost ring never clips canvas top/bottom edges
+      const maxAvailableR = Math.min(cx, cy) - 30;
+      const drawR = Math.min(R, Math.max(90, maxAvailableR - 65));
+
       // ── outer glow rings ──────────────────────────────────────────────
       for (let ring = 0; ring < 3; ring++) {
         const alpha = 0.06 - ring * 0.018;
-        const rad   = R + 28 + ring * 22 + Math.sin(t + ring) * 4;
+        const rad   = drawR + 20 + ring * 16 + Math.sin(t + ring) * 3;
         const g = ctx.createRadialGradient(cx, cy, rad * 0.6, cx, cy, rad);
         g.addColorStop(0, `rgba(56,189,248,${alpha})`);
         g.addColorStop(1, 'rgba(56,189,248,0)');
@@ -99,12 +116,12 @@ export default function SolarSystemSkills({ skills }: { skills: Skill[] }) {
       }
 
       // ── globe sphere gradient ─────────────────────────────────────────
-      const globeG = ctx.createRadialGradient(cx - R * 0.3, cy - R * 0.3, R * 0.05, cx, cy, R);
+      const globeG = ctx.createRadialGradient(cx - drawR * 0.3, cy - drawR * 0.3, drawR * 0.05, cx, cy, drawR);
       globeG.addColorStop(0,   'rgba(56,189,248,0.07)');
       globeG.addColorStop(0.5, 'rgba(56,189,248,0.03)');
       globeG.addColorStop(1,   'rgba(10,20,40,0.45)');
       ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.arc(cx, cy, drawR, 0, Math.PI * 2);
       ctx.fillStyle = globeG;
       ctx.fill();
 
@@ -235,12 +252,13 @@ export default function SolarSystemSkills({ skills }: { skills: Skill[] }) {
       style={{
         position: 'relative',
         width: '100%',
-        height: 560,
+        height: Math.max(400, R * 2 + 150),
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         cursor: isDragging.current ? 'grabbing' : 'grab',
         userSelect: 'none',
+        overflow: 'visible',
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}

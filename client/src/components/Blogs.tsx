@@ -7,7 +7,8 @@ export default function Blogs({ blogs }: { blogs: Blog[] }) {
   const [ref, isVisible] = useIntersection({ threshold: 0.1 });
   const [activeBlog, setActiveBlog] = useState<Blog | null>(null);
 
-  if (!blogs || blogs.length === 0) return null;
+  // Shared Experiences section is hidden
+  return null;
 
   return (
     <section id="blogs" ref={ref} className="section-wrapper" style={{ position: 'relative' }}>
@@ -30,9 +31,14 @@ export default function Blogs({ blogs }: { blogs: Blog[] }) {
         transition={{ duration: 0.8 }}
         style={{ marginBottom: '3.5rem', position: 'relative', zIndex: 1 }}
       >
+        <div style={{ display: 'inline-block', marginBottom: '0.5rem' }}>
+          <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.15em', fontFamily: 'var(--font-mono)' }}>
+            // WRITINGS & INSIGHTS
+          </span>
+        </div>
         <h2 className="section-heading">Shared <span className="gradient-text">Experiences</span></h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginTop: '0.5rem', maxWidth: 600 }}>
-          Narratives, research, and reflections on design, performance engineering, and fullstack solutions.
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', marginTop: '0.5rem', maxWidth: 600 }}>
+          Narratives, technical research, and insights on fullstack architecture & web design.
         </p>
       </motion.div>
 

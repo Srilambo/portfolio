@@ -143,10 +143,6 @@ export default function Hero({ settings }: { settings: any }) {
     { label: 'Clients', value: settings?.statsClients || '60+' },
   ];
 
-  const platforms = settings?.freelancePlatforms 
-    ? settings.freelancePlatforms.split(',').map((s: string) => s.trim()).filter(Boolean)
-    : ['Behance', 'Dribbble', 'Upwork', 'Fiverr'];
-
   return (
     <section id="hero" style={{ 
       position: 'relative', 
@@ -165,117 +161,164 @@ export default function Hero({ settings }: { settings: any }) {
         width: '100%'
       }}>
         
-        {/* Left Side: Text */}
+        {/* Left Side: Text & Intro */}
         <motion.div
-          initial={{ opacity: 0, x: -50 }}
+          initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <span style={{ 
-            color: 'var(--accent)', 
-            fontWeight: 700, 
-            fontSize: '1.1rem', 
-            textTransform: 'uppercase', 
-            letterSpacing: '0.2em' 
-          }}>
-            {role}
-          </span>
-          <h1 style={{ 
-            fontSize: 'clamp(3.5rem, 8vw, 5.5rem)', 
-            fontWeight: 900, 
-            margin: '1rem 0 0.25rem', 
-            lineHeight: 1,
-            color: 'var(--text-primary)',
-            background: 'var(--gradient)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
-            {settings?.nickname || name}
+          {/* Role Pill Badge */}
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.45rem 1.1rem',
+              borderRadius: '9999px',
+              background: 'rgba(56, 189, 248, 0.08)',
+              border: '1px solid rgba(56, 189, 248, 0.25)',
+              marginBottom: '1.25rem',
+              boxShadow: '0 0 20px rgba(56, 189, 248, 0.15)',
+            }}
+          >
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: 'var(--accent)',
+                boxShadow: '0 0 10px var(--accent)',
+              }}
+            />
+            <span
+              style={{
+                color: 'var(--accent)',
+                fontWeight: 700,
+                fontSize: '0.85rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.15em',
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
+              {role}
+            </span>
+          </div>
+
+          <h1
+            style={{
+              fontSize: 'clamp(3rem, 7vw, 5rem)',
+              fontWeight: 900,
+              margin: '0.25rem 0 0.5rem',
+              lineHeight: 1.08,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.03em',
+            }}
+          >
+            <span
+              style={{
+                background: 'var(--gradient)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                display: 'inline-block',
+              }}
+            >
+              {settings?.nickname || name}
+            </span>
           </h1>
+
           {settings?.nickname && (
-            <p style={{
-              fontSize: 'clamp(1.1rem, 2.5vw, 1.4rem)',
-              fontWeight: 700,
-              color: 'var(--text-secondary)',
-              margin: '0 0 1.5rem',
-              letterSpacing: '0.03em'
-            }}>
+            <p
+              style={{
+                fontSize: 'clamp(1.1rem, 2.5vw, 1.35rem)',
+                fontWeight: 700,
+                color: 'var(--text-secondary)',
+                margin: '0 0 1.25rem',
+                letterSpacing: '0.02em',
+              }}
+            >
               {name}
             </p>
           )}
-          <div style={{ width: 80, height: 4, background: 'var(--gradient)', marginBottom: '2rem' }} />
-          <p style={{ 
-            color: 'var(--text-secondary)', 
-            fontSize: '1.1rem', 
-            lineHeight: 1.8, 
-            maxWidth: '500px',
-            marginBottom: '2.5rem'
-          }}>
+
+          <p
+            style={{
+              color: 'var(--text-secondary)',
+              fontSize: '1.125rem',
+              lineHeight: 1.75,
+              maxWidth: '520px',
+              marginBottom: '2.5rem',
+            }}
+          >
             {bio}
           </p>
 
-          <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', marginBottom: '3rem' }}>
-            <a 
-              href="#contact" 
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
+            <a
+              href="#contact"
               style={{
                 background: 'var(--gradient)',
-                color: 'white',
-                padding: '0.9rem 2.2rem',
-                borderRadius: '50px',
-                fontWeight: 700,
+                color: '#020617',
+                padding: '0.95rem 2.25rem',
+                borderRadius: '9999px',
+                fontWeight: 800,
                 fontSize: '0.95rem',
                 textDecoration: 'none',
-                boxShadow: '0 8px 24px rgba(56, 189, 248, 0.3)',
+                boxShadow: '0 8px 25px rgba(56, 189, 248, 0.4)',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.5rem',
+                gap: '0.6rem',
               }}
-              onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translateY(-3px)';
-                e.currentTarget.style.boxShadow = '0 12px 28px rgba(56, 189, 248, 0.45)';
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
+                e.currentTarget.style.boxShadow = '0 12px 32px rgba(56, 189, 248, 0.6)';
               }}
-              onMouseLeave={e => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(56, 189, 248, 0.3)';
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                e.currentTarget.style.boxShadow = '0 8px 25px rgba(56, 189, 248, 0.4)';
               }}
             >
-              Hire Me
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <span>Explore My Work</span>
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </a>
-            <a 
-              href="#projects" 
+
+            <a
+              href="#projects"
               style={{
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                padding: '0.9rem 2.2rem',
-                borderRadius: '50px',
+                background: 'rgba(15, 23, 42, 0.6)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                color: 'var(--text-primary)',
+                backdropFilter: 'blur(12px)',
+                padding: '0.95rem 2.25rem',
+                borderRadius: '9999px',
                 fontWeight: 700,
                 fontSize: '0.95rem',
                 textDecoration: 'none',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.5rem',
+                gap: '0.6rem',
               }}
-              onMouseEnter={e => {
+              onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-3px)';
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                e.currentTarget.style.borderColor = 'var(--accent)';
+                e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+                e.currentTarget.style.background = 'rgba(30, 41, 59, 0.8)';
               }}
-              onMouseLeave={e => {
+              onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                e.currentTarget.style.background = 'rgba(15, 23, 42, 0.6)';
               }}
             >
-              View Work
+              <span>Featured Work</span>
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
             </a>
           </div>
-
         </motion.div>
 
         {/* Center: Image with Orbiting Tech Stack */}

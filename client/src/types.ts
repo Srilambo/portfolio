@@ -41,3 +41,14 @@ export interface Blog {
   date: string;
   category: string;
 }
+
+export interface Review {
+  id?: string;
+  name: string;
+  email?: string;
+  rating: number;
+  comment: string;
+  approved?: boolean;
+  createdAt?: string;
+}
+

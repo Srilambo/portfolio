@@ -1,4 +1,5 @@
 import React from 'react';
+import { getApiUrl } from '../utils/api';
 
 export const SOCIAL_ICONS: Record<string, { icon: React.ReactNode; brandColor: string }> = {
   Facebook: {
@@ -82,27 +83,78 @@ export default function Footer({ settings }: { settings: any }) {
     { name: 'WhatsApp', url: settings?.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/\D/g, '')}` : undefined },
   ].filter(s => !!s.url);
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer style={{ borderTop: '1px solid var(--border-glass)', padding: '4rem 1.5rem 2rem', background: 'var(--bg)' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem' }}>
+    <footer
+      style={{
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        padding: '4.5rem 1.5rem 2.5rem',
+        background: 'rgba(15, 23, 42, 0.7)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        position: 'relative',
+      }}
+    >
+      <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem' }}>
         
-        <div style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '0.1em' }}>
-          <span className="gradient-text">{name.toUpperCase()}</span>
+        {/* Back to top button */}
+        <button
+          onClick={scrollToTop}
+          aria-label="Scroll back to top"
+          style={{
+            position: 'absolute',
+            top: -24,
+            width: 48,
+            height: 48,
+            borderRadius: '50%',
+            background: 'var(--gradient)',
+            border: 'none',
+            color: '#020617',
+            fontSize: '1.2rem',
+            fontWeight: 900,
+            cursor: 'pointer',
+            boxShadow: '0 8px 25px rgba(56, 189, 248, 0.4)',
+            transition: 'all 0.3s ease',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'translateY(-4px) scale(1.08)';
+            e.currentTarget.style.boxShadow = '0 12px 30px rgba(56, 189, 248, 0.6)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'translateY(0) scale(1)';
+            e.currentTarget.style.boxShadow = '0 8px 25px rgba(56, 189, 248, 0.4)';
+          }}
+        >
+          ↑
+        </button>
+
+        {/* Brand Header */}
+        <div style={{ fontSize: '1.6rem', fontWeight: 900, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+          SRILAM<span style={{ color: 'var(--accent)' }}>BO</span>
         </div>
 
-        <nav style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-          {['About', 'Skills', 'Projects', 'Experience', 'Contact'].map(item => (
+        {/* Nav Links */}
+        <nav style={{ display: 'flex', gap: '1.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+          {['About', 'Services', 'Skills', 'Projects', 'Experience', /* 'Blogs', */ 'Contact'].map(item => (
             <a key={item} href={`#${item.toLowerCase()}`} style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', transition: 'color 0.2s' }}
-               onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
+               onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
                onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}>
               {item}
             </a>
           ))}
         </nav>
 
+        {/* Social Links */}
         <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', justifyContent: 'center', minHeight: 40, alignItems: 'center' }}>
           {socials.map(s => {
             const data = SOCIAL_ICONS[s.name];
+            const isWhatsApp = s.name === 'WhatsApp';
             return (
               <a 
                 key={s.name} 
@@ -110,6 +162,13 @@ export default function Footer({ settings }: { settings: any }) {
                 target="_blank" 
                 rel="noopener noreferrer" 
                 title={s.name}
+                onClick={isWhatsApp ? () => {
+                  fetch(getApiUrl('/api/whatsapp-click'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ source: 'footer', page: window.location.pathname }),
+                  }).catch(() => {});
+                } : undefined}
                 style={{ 
                   color: 'var(--text-secondary)', 
                   textDecoration: 'none',
@@ -136,8 +195,8 @@ export default function Footer({ settings }: { settings: any }) {
           })}
         </div>
 
-        <div style={{ borderTop: '1px solid var(--border-glass)', width: '100%', paddingTop: '2rem', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-          © {year} {name}. All rights reserved. Designed with ❤️ in 3D.
+        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', width: '100%', paddingTop: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+          © {year} {name}. All rights reserved. Architected with modern web design principles.
         </div>
       </div>
     </footer>

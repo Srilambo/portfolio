@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import './styles/admin.css';
 
@@ -14,6 +14,7 @@ import MessagesAdmin from './pages/MessagesAdmin';
 import SettingsAdmin from './pages/SettingsAdmin';
 import BlogsAdmin from './pages/BlogsAdmin';
 import ReviewsAdmin from './pages/ReviewsAdmin';
+import WhatsAppClicksAdmin from './pages/WhatsAppClicksAdmin';
 
 const DASH_CARDS = [
   {
@@ -56,16 +57,16 @@ const DASH_CARDS = [
     desc: 'Manage offered services',
     color: '#fbbf24', glow: 'rgba(251,191,36,0.15)',
   },
-  {
-    icon: (
-      <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-      </svg>
-    ),
-    label: 'Blogs', to: '/admin/blogs',
-    desc: 'Write & publish blog posts',
-    color: '#f472b6', glow: 'rgba(244,114,182,0.15)',
-  },
+  // {
+  //   icon: (
+  //     <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  //       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+  //     </svg>
+  //   ),
+  //   label: 'Blogs', to: '/admin/blogs',
+  //   desc: 'Write & publish blog posts',
+  //   color: '#f472b6', glow: 'rgba(244,114,182,0.15)',
+  // },
   {
     icon: (
       <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -262,7 +263,7 @@ function DashCard({ card, index }: { card: typeof DASH_CARDS[0]; index: number }
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/" element={<PortfolioPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -276,6 +277,7 @@ export default function App() {
               <Route path="/admin/blogs"       element={<BlogsAdmin />} />
               <Route path="/admin/messages"    element={<MessagesAdmin />} />
               <Route path="/admin/reviews"     element={<ReviewsAdmin />} />
+              <Route path="/admin/whatsapp"    element={<WhatsAppClicksAdmin />} />
               <Route path="/admin/settings"    element={<SettingsAdmin />} />
             </Route>
           </Route>

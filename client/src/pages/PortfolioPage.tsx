@@ -15,6 +15,7 @@ import CursorGlow from '../components/CursorGlow';
 import LoadingScreen from '../components/LoadingScreen';
 
 import { getApiUrl } from '../utils/api';
+import { skills as defaultSkills } from '../data/skills';
 
 export default function PortfolioPage() {
   const [data, setData] = useState<any>(null);
@@ -72,6 +73,7 @@ export default function PortfolioPage() {
   }
 
   const { settings = {}, projects = [], skills = [], experience = [], blogs = [], services = [], reviews = [] } = data || {};
+  const activeSkills = (skills && skills.length > 0 && skills.some((s: any) => s.name === 'Flutter')) ? skills : defaultSkills;
 
   return (
     <>
@@ -86,10 +88,11 @@ export default function PortfolioPage() {
             <Hero settings={settings} />
             <About settings={settings} />
             <Services settings={settings} services={services} />
-            <Skills skills={skills} />
+            <Skills skills={activeSkills} />
             <Projects projects={projects} />
             <Experience experience={experience} />
-            <Blogs blogs={blogs} />
+            {/* Hidden for now: Shared Experiences section */}
+            {/* <Blogs blogs={blogs} /> */}
             <Reviews reviews={reviews} />
             <Contact settings={settings} />
           </main>

@@ -71,3 +71,22 @@ const ReviewSchema = new Schema<IReview>(
 );
 
 export const Review: Model<IReview> = model<IReview>('Review', ReviewSchema);
+
+// ── WhatsAppClick (visitor engagement tracking) ────────────
+export interface IWhatsAppClick extends Document {
+  source: 'contact' | 'footer' | 'other'; // where on page the click happened
+  page:   string;                          // current page URL path
+  ip?:    string;                          // hashed/anonymised for privacy
+  createdAt: Date;
+}
+
+const WhatsAppClickSchema = new Schema<IWhatsAppClick>(
+  {
+    source: { type: String, enum: ['contact', 'footer', 'other'], default: 'other' },
+    page:   { type: String, default: '/' },
+    ip:     { type: String, default: '' },
+  },
+  { timestamps: { createdAt: 'createdAt', updatedAt: false } }
+);
+
+export const WhatsAppClick: Model<IWhatsAppClick> = model<IWhatsAppClick>('WhatsAppClick', WhatsAppClickSchema);

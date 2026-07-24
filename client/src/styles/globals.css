@@ -6,17 +6,26 @@
 /* ── CSS Variables ─────────────────────────────────────────── */
 :root {
   --bg:            #020617;
-  --bg-secondary:  #0f172a;
+  --bg-secondary:  #0b0f19;
+  --bg-tertiary:   #111827;
   --accent:        #38bdf8;
-  --secondary:     #818cf8;
-  --accent-glow:   rgba(56, 189, 248, 0.15);
-  --secondary-glow:rgba(129, 140, 248, 0.15);
-  --card-glass:    rgba(30, 41, 59, 0.5);
-  --border-glass:  rgba(255, 255, 255, 0.05);
+  --accent-secondary: #06b6d4;
+  --secondary:     #10b981;
+  --emerald:       #10b981;
+  --accent-glow:   rgba(56, 189, 248, 0.2);
+  --secondary-glow:rgba(16, 185, 129, 0.2);
+  --emerald-glow:  rgba(16, 185, 129, 0.2);
+  --card-glass:    rgba(15, 23, 42, 0.65);
+  --card-glass-hover: rgba(30, 41, 59, 0.85);
+  --border-glass:  rgba(255, 255, 255, 0.08);
+  --border-glass-accent: rgba(56, 189, 248, 0.3);
   --text-primary:  #f8fafc;
   --text-secondary:#94a3b8;
-  --gradient:      linear-gradient(135deg, #38bdf8, #818cf8);
-  --font:          'Inter', sans-serif;
+  --text-muted:    #64748b;
+  --gradient:      linear-gradient(135deg, #38bdf8 0%, #06b6d4 50%, #10b981 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(16, 185, 129, 0.15));
+  --font:          'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+  --font-mono:     'JetBrains Mono', monospace;
 }
 
 /* ── Base ──────────────────────────────────────────────────── */
@@ -44,36 +53,19 @@ body {
   position: relative;
 }
 
-body::before,
-body::after {
+/* Subtle background grid pattern */
+body::before {
   content: '';
   position: fixed;
-  width: 50vw;
-  height: 50vw;
-  border-radius: 50%;
-  filter: blur(120px);
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 60%),
+    radial-gradient(circle at 100% 60%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
   z-index: -1;
-  opacity: 0.4;
   pointer-events: none;
-}
-
-body::before {
-  top: -10%;
-  left: -10%;
-  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-  animation: float 20s infinite alternate;
-}
-
-body::after {
-  bottom: -10%;
-  right: -10%;
-  background: radial-gradient(circle, var(--secondary-glow) 0%, transparent 70%);
-  animation: float 25s infinite alternate-reverse;
-}
-
-@keyframes float {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(10%, 10%); }
 }
 
 /* ── Selection ─────────────────────────────────────────────── */
@@ -90,11 +82,11 @@ body::after {
   background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--accent);
+  background: linear-gradient(180deg, var(--accent), var(--secondary));
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--secondary);
+  background: var(--accent);
 }
 
 /* ── Utility classes ───────────────────────────────────────── */
@@ -108,9 +100,15 @@ body::after {
 .glass-card {
   background: var(--card-glass);
   border: 1px solid var(--border-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 1rem;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 1.25rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: var(--border-glass-accent);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35), 0 0 20px var(--accent-glow);
 }
 
 .accent-glow {
@@ -227,11 +225,15 @@ body::after {
 .skills-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 4rem;
+  gap: 3rem;
+  align-items: center;
+  justify-items: center;
+  width: 100%;
 }
 @media (min-width: 1024px) {
   .skills-grid {
     grid-template-columns: 1.2fr 1fr;
+    gap: 3.5rem;
   }
 }
 

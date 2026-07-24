@@ -30,7 +30,6 @@ export default function AdminDashboard() {
   }, []);
 
   const isMobileLayout  = layout === 'mobile';
-  const isTabletLayout  = layout === 'tablet';
   const isDesktopLayout = layout === 'desktop';
 
   const timeStr = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });

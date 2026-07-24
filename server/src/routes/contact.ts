@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { Message } from '../db/schema.js';
 import { sendContactEmail } from '../services/mailer.js';
+import { sendWhatsAppNotification } from '../services/whatsapp.js';
 
 const router = Router();
 
@@ -29,11 +30,18 @@ router.post('/', async (req, res) => {
     console.error('DB insert error:', dbErr);
   }
 
-  // Send email (non-fatal)
+  // Send email notification to admin (non-fatal)
   try {
     await sendContactEmail({ name, email, subject, message });
   } catch (mailErr) {
     console.error('Mail error:', mailErr);
+  }
+
+  // Send WhatsApp notification to admin (non-fatal — never breaks the form)
+  try {
+    await sendWhatsAppNotification({ name, email, subject, message });
+  } catch (waErr) {
+    console.error('WhatsApp notification error:', waErr);
   }
 
   res.json({ success: true, message: 'Message sent successfully' });

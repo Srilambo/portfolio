@@ -2,16 +2,18 @@ import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import { globalLimiter, contactLimiter } from './middleware/rateLimiter.js';
-import authRouter           from './routes/auth.js';
-import contactRouter        from './routes/contact.js';
-import githubRouter         from './routes/github.js';
-import adminDataRouter      from './routes/adminData.js';
-import adminMessagesRouter  from './routes/adminMessages.js';
-import adminSettingsRouter  from './routes/adminSettings.js';
-import publicSettingsRouter from './routes/publicSettings.js';
-import publicDataRouter     from './routes/publicData.js';
-import reviewsRouter        from './routes/reviews.js';
-import adminReviewsRouter   from './routes/adminReviews.js';
+import authRouter                from './routes/auth.js';
+import contactRouter             from './routes/contact.js';
+import githubRouter              from './routes/github.js';
+import adminDataRouter           from './routes/adminData.js';
+import adminMessagesRouter       from './routes/adminMessages.js';
+import adminSettingsRouter       from './routes/adminSettings.js';
+import publicSettingsRouter      from './routes/publicSettings.js';
+import publicDataRouter          from './routes/publicData.js';
+import reviewsRouter             from './routes/reviews.js';
+import adminReviewsRouter        from './routes/adminReviews.js';
+import whatsappClickRouter       from './routes/whatsappClick.js';
+import adminWhatsappClicksRouter from './routes/adminWhatsappClicks.js';
 import { connectDB } from './db/db.js';
 
 const app = express();
@@ -54,6 +56,8 @@ app.use('/api/admin',            adminDataRouter);
 app.use('/api/admin/messages',   adminMessagesRouter);
 app.use('/api/admin/settings',   adminSettingsRouter);
 app.use('/api/admin/reviews',    adminReviewsRouter);
+app.use('/api/admin/whatsapp-clicks',    adminWhatsappClicksRouter);
+app.use('/api/whatsapp-click',           whatsappClickRouter);
 
 // ── Health check ───────────────────────────────────────────
 app.get('/api/health', (_req, res) =>
