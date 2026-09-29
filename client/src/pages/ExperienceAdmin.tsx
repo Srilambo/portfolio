@@ -16,13 +16,7 @@ export default function ExperienceAdmin() {
 
   useEffect(() => {
     request<Experience[]>('/api/admin/experience')
-      .then(data => {
-        if (data && data.length > 0 && !data.some(e => e.company === 'Tech Innovations Inc.')) {
-          setList(data);
-        } else {
-          setList(defaultExp);
-        }
-      })
+      .then(data => setList(Array.isArray(data) && data.length > 0 ? data : defaultExp))
       .catch(() => setList(defaultExp));
   }, [request]);
 

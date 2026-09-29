@@ -75,14 +75,10 @@ export default function PortfolioPage() {
   }
 
   const { settings = {}, projects = [], skills = [], experience = [], blogs = [], services = [], reviews = [] } = data || {};
-  
-  const hasOldDemoProjects = projects.some((p: any) => p.title === 'AI Analytics Dashboard');
-  const activeProjects = (projects && projects.length > 0 && !hasOldDemoProjects) ? projects : defaultProjects;
 
-  const activeSkills = (skills && skills.length > 0) ? skills : defaultSkills;
-
-  const hasOldDemoExperience = experience.some((e: any) => e.company === 'Tech Innovations Inc.');
-  const activeExperience = (experience && experience.length > 0 && !hasOldDemoExperience) ? experience : defaultExperience;
+  const activeProjects = (Array.isArray(projects) && projects.length > 0) ? projects : defaultProjects;
+  const activeSkills = (Array.isArray(skills) && skills.length > 0) ? skills : defaultSkills;
+  const activeExperience = (Array.isArray(experience) && experience.length > 0) ? experience : defaultExperience;
 
   return (
     <>
