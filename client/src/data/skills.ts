@@ -2,10 +2,22 @@ import type { Skill } from '../types';
 
 export const skills: Skill[] = [
   { 
-    name: 'Flutter', 
+    name: 'React', 
+    level: 95, 
+    category: 'Frontend', 
+    icon: 'https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg' 
+  },
+  { 
+    name: 'TypeScript', 
     level: 90, 
     category: 'Frontend', 
-    icon: 'https://raw.githubusercontent.com/devicons/devicon/master/icons/flutter/flutter-original.svg' 
+    icon: 'https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg' 
+  },
+  { 
+    name: 'Three.js', 
+    level: 85, 
+    category: 'Frontend', 
+    icon: 'https://raw.githubusercontent.com/devicons/devicon/master/icons/threejs/threejs-original.svg' 
   },
   { 
     name: 'Node.js', 
@@ -20,27 +32,16 @@ export const skills: Skill[] = [
     icon: 'https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original.svg' 
   },
   { 
-    name: 'Postman (API Testing)', 
-    level: 85, 
+    name: 'Docker', 
+    level: 80, 
     category: 'DevOps', 
-    icon: 'https://raw.githubusercontent.com/devicons/devicon/master/icons/postman/postman-original.svg' 
+    icon: 'https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original.svg' 
   },
   { 
-    name: 'GitHub', 
-    level: 90, 
+    name: 'AWS', 
+    level: 75, 
     category: 'DevOps', 
-    icon: 'https://cdn.simpleicons.org/github/ffffff' 
-  },
-  { 
-    name: 'Bitbucket', 
-    level: 85, 
-    category: 'DevOps', 
-    icon: 'https://raw.githubusercontent.com/devicons/devicon/master/icons/bitbucket/bitbucket-original.svg' 
-  },
-  { 
-    name: 'Vercel', 
-    level: 88, 
-    category: 'DevOps', 
-    icon: 'https://cdn.simpleicons.org/vercel/ffffff' 
+    icon: 'https://raw.githubusercontent.com/devicons/devicon/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg' 
   },
 ];
+
