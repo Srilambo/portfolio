@@ -4,6 +4,7 @@ import type { Experience } from '../types';
 import { experiences as defaultExp } from '../data/experience';
 import ConfirmModal from '../components/ConfirmModal';
 import ImagePicker from '../components/ImagePicker';
+import { getApiUrl } from '../utils/api';
 
 export default function ExperienceAdmin() {
   const { request } = useAdminApi();
@@ -17,7 +18,12 @@ export default function ExperienceAdmin() {
   useEffect(() => {
     request<Experience[]>('/api/admin/experience')
       .then(data => setList(Array.isArray(data) && data.length > 0 ? data : defaultExp))
-      .catch(() => setList(defaultExp));
+      .catch(() => {
+        fetch(getApiUrl('/api/data'))
+          .then(r => r.json())
+          .then(d => setList(d.experience && d.experience.length > 0 ? d.experience : defaultExp))
+          .catch(() => setList(defaultExp));
+      });
   }, [request]);
 
   const save = async (updated: Experience[]) => {

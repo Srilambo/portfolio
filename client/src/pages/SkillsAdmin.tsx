@@ -4,6 +4,7 @@ import ConfirmModal from '../components/ConfirmModal';
 import ImagePicker from '../components/ImagePicker';
 import type { Skill } from '../types';
 import { skills as defaultSkills } from '../data/skills';
+import { getApiUrl } from '../utils/api';
 
 const EMPTY_SKILL: Skill = {
   name: '',
@@ -24,7 +25,12 @@ export default function SkillsAdmin() {
   useEffect(() => {
     request<Skill[]>('/api/admin/skills')
       .then(data => setList(data && data.length > 0 ? data : defaultSkills))
-      .catch(() => setList(defaultSkills));
+      .catch(() => {
+        fetch(getApiUrl('/api/data'))
+          .then(r => r.json())
+          .then(d => setList(d.skills && d.skills.length > 0 ? d.skills : defaultSkills))
+          .catch(() => setList(defaultSkills));
+      });
   }, [request]);
 
   const saveList = async (updated: Skill[]) => {

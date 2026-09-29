@@ -4,6 +4,7 @@ import ConfirmModal from '../components/ConfirmModal';
 import type { Project } from '../types';
 import { projects as defaultProjects } from '../data/projects';
 import ImagePicker from '../components/ImagePicker';
+import { getApiUrl } from '../utils/api';
 
 const EMPTY: Omit<Project, 'id'> = { title: '', description: '', tech: [], liveUrl: '', githubUrl: '', image: '', category: 'Fullstack' };
 
@@ -20,7 +21,12 @@ export default function ProjectsAdmin() {
   useEffect(() => {
     request<Project[]>('/api/admin/projects')
       .then(data => setList(Array.isArray(data) && data.length > 0 ? data : defaultProjects))
-      .catch(() => setList(defaultProjects));
+      .catch(() => {
+        fetch(getApiUrl('/api/data'))
+          .then(r => r.json())
+          .then(d => setList(d.projects && d.projects.length > 0 ? d.projects : defaultProjects))
+          .catch(() => setList(defaultProjects));
+      });
   }, [request]);
 
   const openAdd  = () => { setEditing(null); setForm(EMPTY); setTechInput(''); setModal(true); };
