@@ -20,17 +20,38 @@ export default function ProjectsAdmin() {
 
   useEffect(() => {
     request<Project[]>('/api/admin/projects')
-      .then(data => setList(Array.isArray(data) && data.length > 0 ? data : defaultProjects))
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setList(data);
+        } else {
+          fetch(getApiUrl('/api/data'))
+            .then(r => r.json())
+            .then(d => {
+              if (d.projects && Array.isArray(d.projects) && d.projects.length > 0) {
+                setList(d.projects);
+              } else {
+                setList(defaultProjects);
+              }
+            })
+            .catch(() => setList(defaultProjects));
+        }
+      })
       .catch(() => {
         fetch(getApiUrl('/api/data'))
           .then(r => r.json())
-          .then(d => setList(d.projects && d.projects.length > 0 ? d.projects : defaultProjects))
+          .then(d => {
+            if (d.projects && Array.isArray(d.projects) && d.projects.length > 0) {
+              setList(d.projects);
+            } else {
+              setList(defaultProjects);
+            }
+          })
           .catch(() => setList(defaultProjects));
       });
   }, [request]);
 
   const openAdd  = () => { setEditing(null); setForm(EMPTY); setTechInput(''); setModal(true); };
-  const openEdit = (p: Project) => { setEditing(p); setForm({ title: p.title, description: p.description, tech: p.tech, liveUrl: p.liveUrl, githubUrl: p.githubUrl, image: p.image, category: p.category }); setTechInput(p.tech.join(', ')); setModal(true); };
+  const openEdit = (p: Project) => { setEditing(p); setForm({ title: p.title || '', description: p.description || '', tech: p.tech || [], liveUrl: p.liveUrl || '', githubUrl: p.githubUrl || '', image: p.image || '', category: p.category || 'Fullstack' }); setTechInput((p.tech || []).join(', ')); setModal(true); };
 
   const save = async () => {
     setSaving(true);
@@ -73,34 +94,42 @@ export default function ProjectsAdmin() {
             </tr>
           </thead>
           <tbody>
-            {list.map((p, i) => (
-              <tr key={p.id} style={{ borderBottom: i < list.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
-                <td style={{ padding: '1rem', fontWeight: 600, color: '#111827', fontSize: '0.9rem' }}>{p.title}</td>
-                <td style={{ padding: '1rem' }}>
-                  <span style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', borderRadius: 99, padding: '0.15rem 0.6rem', fontSize: '0.75rem', fontWeight: 700 }}>{p.category}</span>
-                </td>
-                <td style={{ padding: '1rem' }}>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                    {p.tech.slice(0, 3).map(t => <span key={t} style={{ background: '#f3f4f6', color: '#374151', borderRadius: 99, padding: '0.1rem 0.5rem', fontSize: '0.72rem', fontWeight: 600 }}>{t}</span>)}
-                    {p.tech.length > 3 && <span style={{ color: '#9ca3af', fontSize: '0.72rem' }}>+{p.tech.length - 3}</span>}
-                  </div>
-                </td>
-                <td style={{ padding: '1rem' }}>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <a href={p.liveUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#00f5ff', fontSize: '0.8rem', fontWeight: 600, textDecoration: 'none' }}>Live ↗</a>
-                    <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', fontSize: '0.8rem', textDecoration: 'none' }}>GitHub</a>
-                  </div>
-                </td>
-                <td style={{ padding: '1rem' }}>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={() => openEdit(p)} style={{ padding: '0.35rem 0.75rem', borderRadius: 6, border: '1px solid #e5e7eb', background: '#f9fafb', color: '#374151', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'Inter, sans-serif' }}>Edit</button>
-                    <button onClick={() => setConfirm(p.id)} style={{ padding: '0.35rem 0.75rem', borderRadius: 6, border: '1px solid #fecaca', background: '#fff5f5', color: '#ef4444', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'Inter, sans-serif' }}>Delete</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {list.map((p, i) => {
+              const techList = Array.isArray(p.tech) ? p.tech : [];
+              return (
+                <tr key={p.id || i} style={{ borderBottom: i < list.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
+                  <td style={{ padding: '1rem', fontWeight: 600, color: '#111827', fontSize: '0.9rem' }}>{p.title}</td>
+                  <td style={{ padding: '1rem' }}>
+                    <span style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', borderRadius: 99, padding: '0.15rem 0.6rem', fontSize: '0.75rem', fontWeight: 700 }}>{p.category}</span>
+                  </td>
+                  <td style={{ padding: '1rem' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                      {techList.slice(0, 3).map(t => <span key={t} style={{ background: '#f3f4f6', color: '#374151', borderRadius: 99, padding: '0.1rem 0.5rem', fontSize: '0.72rem', fontWeight: 600 }}>{t}</span>)}
+                      {techList.length > 3 && <span style={{ color: '#9ca3af', fontSize: '0.72rem' }}>+{techList.length - 3}</span>}
+                    </div>
+                  </td>
+                  <td style={{ padding: '1rem' }}>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      {p.liveUrl && <a href={p.liveUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#00f5ff', fontSize: '0.8rem', fontWeight: 600, textDecoration: 'none' }}>Live ↗</a>}
+                      {p.githubUrl && <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', fontSize: '0.8rem', textDecoration: 'none' }}>GitHub</a>}
+                    </div>
+                  </td>
+                  <td style={{ padding: '1rem' }}>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button onClick={() => openEdit(p)} style={{ padding: '0.35rem 0.75rem', borderRadius: 6, border: '1px solid #e5e7eb', background: '#f9fafb', color: '#374151', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'Inter, sans-serif' }}>Edit</button>
+                      <button onClick={() => setConfirm(p.id)} style={{ padding: '0.35rem 0.75rem', borderRadius: 6, border: '1px solid #fecaca', background: '#fff5f5', color: '#ef4444', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'Inter, sans-serif' }}>Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+        {list.length === 0 && (
+          <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280', fontSize: '0.9rem' }}>
+            No projects added yet. Click "+ Add Project" to create one.
+          </div>
+        )}
       </div>
 
       {/* Modal */}
