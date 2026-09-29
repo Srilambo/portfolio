@@ -19,7 +19,13 @@ export default function ProjectsAdmin() {
 
   useEffect(() => {
     request<Project[]>('/api/admin/projects')
-      .then(setList)
+      .then(data => {
+        if (data && data.length > 0 && !data.some(p => p.title === 'AI Analytics Dashboard')) {
+          setList(data);
+        } else {
+          setList(defaultProjects);
+        }
+      })
       .catch(() => setList(defaultProjects));
   }, [request]);
 

@@ -22,40 +22,60 @@ const DEMO_SETTINGS = [
   { key: 'metaDescription', value: 'React, Node.js, Three.js. Building scalable web apps from pixel to production.' },
 ];
 
-const DEMO_PROJECTS = [
+const ORIGINAL_PROJECTS = [
   {
-    id: '1',
-    title: 'AI Analytics Dashboard',
-    description: 'A real-time data visualization platform with AI-powered insights and predictive modeling.',
-    tech: ['React', 'Node.js', 'Python', 'D3.js'],
-    liveUrl: '#',
-    githubUrl: '#',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800',
+    id: 'p1',
+    title: 'NexaCommerce',
+    description: 'A high-performance e-commerce platform with real-time inventory, Stripe payments, and an AI-powered product recommendation engine built with React and Node.js.',
+    tech: ['React', 'Node.js', 'PostgreSQL', 'Redis', 'Stripe', 'Docker'],
+    liveUrl: 'https://nexacommerce.demo',
+    githubUrl: 'https://github.com/srilambo/nexacommerce',
+    image: '/images/project-1.jpg',
     category: 'Fullstack'
   },
   {
-    id: '2',
-    title: '3D Product Configurator',
-    description: 'An interactive 3D commerce experience allowing users to customize products in real-time.',
-    tech: ['Three.js', 'React Three Fiber', 'WebGL'],
-    liveUrl: '#',
-    githubUrl: '#',
-    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=800',
+    id: 'p2',
+    title: 'CloudSync Dashboard',
+    description: 'A real-time analytics dashboard for monitoring cloud infrastructure metrics across AWS, GCP, and Azure with customizable widgets and alerting.',
+    tech: ['React', 'TypeScript', 'D3.js', 'WebSockets', 'GraphQL'],
+    liveUrl: 'https://cloudsync.demo',
+    githubUrl: 'https://github.com/srilambo/cloudsync',
+    image: '/images/project-2.jpg',
     category: 'Frontend'
   },
   {
-    id: '3',
-    title: 'Secure Fintech API',
-    description: 'A high-throughput payment gateway API with multi-layered encryption and fraud detection.',
-    tech: ['Node.js', 'MongoDB', 'Redis', 'Docker'],
-    liveUrl: '#',
-    githubUrl: '#',
-    image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=800',
+    id: 'p3',
+    title: 'AuthForge API',
+    description: 'A production-grade authentication microservice supporting OAuth2, JWT, SAML, and MFA. Built for scale with rate-limiting, audit logs, and Kubernetes deployment.',
+    tech: ['Node.js', 'Express', 'PostgreSQL', 'Redis', 'Docker', 'K8s'],
+    liveUrl: 'https://authforge.demo',
+    githubUrl: 'https://github.com/srilambo/authforge',
+    image: '/images/project-3.jpg',
+    category: 'Backend'
+  },
+  {
+    id: 'p4',
+    title: 'Collab Board',
+    description: 'A real-time collaborative whiteboard application with WebRTC video chat, infinite canvas drawing, and multiplayer cursor tracking powered by Socket.io.',
+    tech: ['React', 'Socket.io', 'WebRTC', 'Canvas API', 'Node.js'],
+    liveUrl: 'https://collabboard.demo',
+    githubUrl: 'https://github.com/srilambo/collabboard',
+    image: '/images/project-4.jpg',
+    category: 'Fullstack'
+  },
+  {
+    id: 'p5',
+    title: 'DevPulse CLI',
+    description: 'A developer productivity CLI tool that aggregates GitHub activity, PR reviews, and JIRA tickets into a unified terminal dashboard with AI summaries.',
+    tech: ['Node.js', 'TypeScript', 'GitHub API', 'OpenAI', 'Ink'],
+    liveUrl: 'https://devpulse.demo',
+    githubUrl: 'https://github.com/srilambo/devpulse',
+    image: '/images/project-5.jpg',
     category: 'Backend'
   }
 ];
 
-const DEMO_SKILLS = [
+const ORIGINAL_SKILLS = [
   { name: 'Flutter', level: 90, category: 'Frontend', icon: 'https://raw.githubusercontent.com/devicons/devicon/master/icons/flutter/flutter-original.svg' },
   { name: 'Node.js', level: 92, category: 'Backend', icon: 'https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg' },
   { name: 'MongoDB', level: 88, category: 'Backend', icon: 'https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original.svg' },
@@ -65,25 +85,38 @@ const DEMO_SKILLS = [
   { name: 'Vercel', level: 88, category: 'DevOps', icon: 'https://cdn.simpleicons.org/vercel/ffffff' }
 ];
 
-const DEMO_EXPERIENCE = [
+const ORIGINAL_EXPERIENCE = [
   {
-    company: 'Tech Innovations Inc.',
-    role: 'Senior Fullstack Developer',
-    period: '2021 — Present',
+    company: 'Stripe',
+    role: 'Senior Fullstack Engineer',
+    period: 'Jan 2023 – Present',
     bullets: [
-      'Led the transition from monolithic to microservices architecture.',
-      'Reduced average page load time by 40% through advanced caching strategies.',
-      'Mentored a team of 5 junior developers and established CI/CD best practices.'
+      'Architected a real-time payment dashboard serving 2M+ merchants using React and WebSockets.',
+      'Reduced API p99 latency by 40% by introducing Redis caching and query optimisation.',
+      'Led a team of 6 engineers delivering the new merchant analytics platform on time.',
+      'Implemented a CI/CD pipeline cutting deployment time from 45 min to under 8 min.'
     ]
   },
   {
-    company: 'Digital Solutions Agency',
-    role: 'Web Developer',
-    period: '2019 — 2021',
+    company: 'Vercel',
+    role: 'Fullstack Developer',
+    period: 'Mar 2021 – Dec 2022',
     bullets: [
-      'Developed 20+ responsive web applications for global clients.',
-      'Integrated complex third-party APIs and payment gateways.',
-      'Optimized database queries leading to a 30% performance boost.'
+      'Built the Edge Config UI, enabling zero-latency feature flags for 50k+ projects.',
+      'Contributed to open-source Next.js, landing 12 merged PRs improving hydration performance.',
+      'Collaborated with design to ship a dark-mode dashboard re-design with 97% user satisfaction.',
+      'Mentored 3 junior developers through code reviews and weekly pairing sessions.'
+    ]
+  },
+  {
+    company: 'Accenture',
+    role: 'Software Engineer',
+    period: 'Jul 2019 – Feb 2021',
+    bullets: [
+      'Developed RESTful microservices in Node.js serving a Fortune 500 retail client.',
+      'Migrated a legacy monolith to a Docker + Kubernetes architecture, improving uptime to 99.9%.',
+      'Built automated test suites (Jest, Playwright) achieving 85% code coverage.',
+      'Integrated third-party logistics APIs reducing order fulfillment errors by 30%.'
     ]
   }
 ];
@@ -116,9 +149,9 @@ async function seed() {
     }
 
     // DataStore
-    await DataStore.findOneAndUpdate({ key: 'projects' }, { key: 'projects', value: JSON.stringify(DEMO_PROJECTS) }, { upsert: true });
-    await DataStore.findOneAndUpdate({ key: 'skills' }, { key: 'skills', value: JSON.stringify(DEMO_SKILLS) }, { upsert: true });
-    await DataStore.findOneAndUpdate({ key: 'experience' }, { key: 'experience', value: JSON.stringify(DEMO_EXPERIENCE) }, { upsert: true });
+    await DataStore.findOneAndUpdate({ key: 'projects' }, { key: 'projects', value: JSON.stringify(ORIGINAL_PROJECTS) }, { upsert: true });
+    await DataStore.findOneAndUpdate({ key: 'skills' }, { key: 'skills', value: JSON.stringify(ORIGINAL_SKILLS) }, { upsert: true });
+    await DataStore.findOneAndUpdate({ key: 'experience' }, { key: 'experience', value: JSON.stringify(ORIGINAL_EXPERIENCE) }, { upsert: true });
     await DataStore.findOneAndUpdate({ key: 'blogs' }, { key: 'blogs', value: JSON.stringify(DEMO_BLOGS) }, { upsert: true });
 
     console.log('✅ Seeding complete!');
@@ -130,3 +163,4 @@ async function seed() {
 }
 
 seed();
+

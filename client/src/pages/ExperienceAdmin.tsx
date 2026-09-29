@@ -15,7 +15,15 @@ export default function ExperienceAdmin() {
   const dragIdx = useRef<number | null>(null);
 
   useEffect(() => {
-    request<Experience[]>('/api/admin/experience').then(setList).catch(() => setList(defaultExp));
+    request<Experience[]>('/api/admin/experience')
+      .then(data => {
+        if (data && data.length > 0 && !data.some(e => e.company === 'Tech Innovations Inc.')) {
+          setList(data);
+        } else {
+          setList(defaultExp);
+        }
+      })
+      .catch(() => setList(defaultExp));
   }, [request]);
 
   const save = async (updated: Experience[]) => {

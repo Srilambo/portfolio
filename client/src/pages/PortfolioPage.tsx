@@ -15,6 +15,8 @@ import CursorGlow from '../components/CursorGlow';
 import LoadingScreen from '../components/LoadingScreen';
 
 import { getApiUrl } from '../utils/api';
+import { projects as defaultProjects } from '../data/projects';
+import { experiences as defaultExperience } from '../data/experience';
 import { skills as defaultSkills } from '../data/skills';
 
 export default function PortfolioPage() {
@@ -73,7 +75,14 @@ export default function PortfolioPage() {
   }
 
   const { settings = {}, projects = [], skills = [], experience = [], blogs = [], services = [], reviews = [] } = data || {};
+  
+  const hasOldDemoProjects = projects.some((p: any) => p.title === 'AI Analytics Dashboard');
+  const activeProjects = (projects && projects.length > 0 && !hasOldDemoProjects) ? projects : defaultProjects;
+
   const activeSkills = (skills && skills.length > 0) ? skills : defaultSkills;
+
+  const hasOldDemoExperience = experience.some((e: any) => e.company === 'Tech Innovations Inc.');
+  const activeExperience = (experience && experience.length > 0 && !hasOldDemoExperience) ? experience : defaultExperience;
 
   return (
     <>
@@ -89,8 +98,8 @@ export default function PortfolioPage() {
             <About settings={settings} />
             <Services settings={settings} services={services} />
             <Skills skills={activeSkills} />
-            <Projects projects={projects} />
-            <Experience experience={experience} />
+            <Projects projects={activeProjects} />
+            <Experience experience={activeExperience} />
             {/* Hidden for now: Shared Experiences section */}
             {/* <Blogs blogs={blogs} /> */}
             <Reviews reviews={reviews} />
