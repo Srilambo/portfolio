@@ -73,7 +73,7 @@ export default function PortfolioPage() {
   }
 
   const { settings = {}, projects = [], skills = [], experience = [], blogs = [], services = [], reviews = [] } = data || {};
-  const activeSkills = (skills && skills.length > 0 && skills.some((s: any) => s.name === 'Flutter')) ? skills : defaultSkills;
+  const activeSkills = (skills && skills.length > 0) ? skills : defaultSkills;
 
   return (
     <>
