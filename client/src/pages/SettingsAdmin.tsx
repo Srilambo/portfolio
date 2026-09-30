@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAdminApi } from '../hooks/useAdminApi';
 import ImagePicker from '../components/ImagePicker';
+import UnsavedChangesBar from '../components/UnsavedChangesBar';
 
 interface Settings {
   name: string;
@@ -25,6 +26,27 @@ interface Settings {
   statsProjects?: string;
   statsClients?: string;
   freelancePlatforms?: string;
+
+  // About Me Section & Terminal Configuration
+  aboutHeading?: string;
+  aboutBio?: string;
+  terminalName?: string;
+  terminalRole?: string;
+  terminalLocation?: string;
+  terminalStack?: string;
+  terminalStatus?: string;
+  pillar1Icon?: string;
+  pillar1Title?: string;
+  pillar1Desc?: string;
+  pillar2Icon?: string;
+  pillar2Title?: string;
+  pillar2Desc?: string;
+  pillar3Icon?: string;
+  pillar3Title?: string;
+  pillar3Desc?: string;
+  pillar4Icon?: string;
+  pillar4Title?: string;
+  pillar4Desc?: string;
 }
 
 const DEFAULT: Settings = {
@@ -49,28 +71,65 @@ const DEFAULT: Settings = {
   statsProjects: '220+',
   statsClients: '60+',
   freelancePlatforms: 'Behance, Dribbble, Upwork, Fiverr',
+
+  // About Me defaults matching client page
+  aboutHeading: 'Architecting High-Performance Web Applications',
+  aboutBio: "I'm a Fullstack Developer who builds fast, polished web and mobile apps, from smooth interactive frontends to secure, scalable backends. I care about clean code, great UX, and shipping products that actually work in the real world.",
+  terminalName: 'Ananthkumar Srilambotharasarma',
+  terminalRole: 'Fullstack Developer',
+  terminalLocation: 'Global Remote',
+  terminalStack: 'React, Node.js, TypeScript, MongoDB',
+  terminalStatus: 'Building scalable web applications',
+  pillar1Icon: '⚡',
+  pillar1Title: 'Scalable Systems',
+  pillar1Desc: 'Microservices, APIs & Cloud Deployments',
+  pillar2Icon: '🎨',
+  pillar2Title: 'Pixel-Perfect UI',
+  pillar2Desc: 'Fluid animations & glassmorphism UX',
+  pillar3Icon: '🚀',
+  pillar3Title: 'High Performance',
+  pillar3Desc: 'Sub-second page loads & optimized assets',
+  pillar4Icon: '🛡️',
+  pillar4Title: 'Security & Integrity',
+  pillar4Desc: 'JWT Auth, CORS, and SQL/NoSQL safety',
 };
 
 export default function SettingsAdmin() {
   const { request } = useAdminApi();
-  const [settings, setSettings] = useState<Settings>(DEFAULT);
-  const [saving, setSaving]     = useState(false);
-  const [saved, setSaved]       = useState(false);
+  const [settings, setSettings]                 = useState<Settings>(DEFAULT);
+  const [originalSettings, setOriginalSettings] = useState<Settings>(DEFAULT);
+  const [hasChanges, setHasChanges]             = useState(false);
+  const [saving, setSaving]                     = useState(false);
+  const [saved, setSaved]                       = useState(false);
 
   useEffect(() => {
     request<Record<string, string>>('/api/admin/settings')
-      .then(data => setSettings({ ...DEFAULT, ...data }))
+      .then(data => {
+        const merged = { ...DEFAULT, ...data };
+        setSettings(merged);
+        setOriginalSettings(merged);
+      })
       .catch(() => {});
   }, [request]);
 
-  const set = (k: keyof Settings, v: string) => setSettings(s => ({ ...s, [k]: v }));
+  const set = (k: keyof Settings, v: string) => {
+    setSettings(s => ({ ...s, [k]: v }));
+    setHasChanges(true);
+  };
+
+  const cancelChanges = () => {
+    setSettings({ ...originalSettings });
+    setHasChanges(false);
+  };
 
   const save = async () => {
     setSaving(true);
     try {
       await request('/api/admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
+      setOriginalSettings(settings);
+      setHasChanges(false);
       setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      setTimeout(() => setSaved(false), 2500);
     } catch (err: any) {
       alert(err.message || 'Failed to save settings');
     } finally {
@@ -87,54 +146,164 @@ export default function SettingsAdmin() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [settings]);
+  }, [settings, originalSettings]);
 
-  const inp = { width: '100%', padding: '0.65rem 0.9rem', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: '0.9rem', fontFamily: 'Inter, sans-serif', boxSizing: 'border-box' as const, outline: 'none' };
+  const inp = {
+    width: '100%',
+    padding: '0.65rem 0.9rem',
+    borderRadius: 8,
+    border: '1px solid #e5e7eb',
+    fontSize: '0.9rem',
+    fontFamily: 'Inter, sans-serif',
+    boxSizing: 'border-box' as const,
+    outline: 'none',
+  };
 
-  const Field = ({ label, k, type = 'text' }: { label: string; k: keyof Settings; type?: string }) => (
+  const Field = ({ label, k, type = 'text', placeholder }: { label: string; k: keyof Settings; type?: string; placeholder?: string }) => (
     <div>
       <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#374151', marginBottom: 4 }}>{label}</label>
       {type === 'textarea'
-        ? <textarea rows={3} value={settings[k] || ''} onChange={e => set(k, e.target.value)} style={{ ...inp, resize: 'vertical' }} />
-        : <input type={type} value={settings[k] || ''} onChange={e => set(k, e.target.value)} style={inp} />}
+        ? <textarea rows={3} value={settings[k] || ''} onChange={e => set(k, e.target.value)} placeholder={placeholder} style={{ ...inp, resize: 'vertical' }} />
+        : <input type={type} value={settings[k] || ''} onChange={e => set(k, e.target.value)} placeholder={placeholder} style={inp} />}
     </div>
   );
 
   return (
-    <div style={{ maxWidth: 1000 }}>
+    <div style={{ maxWidth: 1080 }}>
+      {/* Top Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: '#111827' }}>Settings</h2>
-          <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Press Ctrl+S to save settings anytime</span>
+          <span style={{ fontSize: '0.75rem', color: hasChanges ? '#d97706' : '#6b7280', fontWeight: hasChanges ? 700 : 400 }}>
+            {hasChanges ? '⚠️ Unsaved settings changes pending' : 'Configure portfolio, About section, social links & metadata • Press Ctrl+S to save'}
+          </span>
         </div>
-        <button 
-          onClick={save} 
-          disabled={saving}
-          style={{ 
-            padding: '0.6rem 1.4rem', 
-            borderRadius: 8, 
-            border: 'none', 
-            background: saved ? '#22c55e' : '#00f5ff', 
-            color: '#050816', 
-            fontWeight: 700, 
-            fontSize: '0.9rem', 
-            cursor: saving ? 'not-allowed' : 'pointer', 
-            fontFamily: 'Inter, sans-serif', 
-            transition: 'all 0.3s ease',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            boxShadow: '0 4px 14px rgba(0, 245, 255, 0.3)'
-          }}
-        >
-          <span>💾</span>
-          <span>{saving ? 'Saving to MongoDB...' : saved ? '✓ Saved to MongoDB!' : 'Save Settings'}</span>
-        </button>
+
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          {hasChanges && (
+            <button
+              onClick={cancelChanges}
+              disabled={saving}
+              style={{
+                padding: '0.6rem 1.1rem',
+                borderRadius: 8,
+                border: '1px solid #cbd5e1',
+                background: '#f8fafc',
+                color: '#475569',
+                fontWeight: 700,
+                cursor: saving ? 'not-allowed' : 'pointer',
+                fontFamily: 'Inter, sans-serif',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              ✕ Cancel
+            </button>
+          )}
+
+          <button 
+            onClick={save} 
+            disabled={saving}
+            style={{ 
+              padding: '0.6rem 1.4rem', 
+              borderRadius: 8, 
+              border: hasChanges ? '1px solid #059669' : 'none', 
+              background: saved ? '#22c55e' : hasChanges ? '#059669' : '#00f5ff', 
+              color: (saved || hasChanges) ? '#fff' : '#050816', 
+              fontWeight: 800, 
+              fontSize: '0.9rem', 
+              cursor: saving ? 'not-allowed' : 'pointer', 
+              fontFamily: 'Inter, sans-serif', 
+              transition: 'all 0.3s ease',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              boxShadow: hasChanges ? '0 0 15px rgba(16, 185, 129, 0.4)' : '0 4px 14px rgba(0, 245, 255, 0.3)'
+            }}
+          >
+            <span>{saving ? '⏳' : saved ? '✓' : '💾'}</span>
+            <span>{saving ? 'Saving to MongoDB...' : saved ? '✓ Saved to MongoDB!' : hasChanges ? 'Save Settings *' : 'Save Settings'}</span>
+          </button>
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '2rem', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.25fr 0.75fr', gap: '2rem', alignItems: 'start' }}>
         {/* Left: form */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
+          {/* 🖥️ About Me & Terminal Configuration Section */}
+          <div style={{ background: '#fff', border: '2px solid #38bdf8', borderRadius: 14, padding: '1.5rem', boxShadow: '0 4px 20px rgba(56, 189, 248, 0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span>🖥️</span> About Me & Terminal Window (`developer.config.ts`)
+                </h3>
+                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Edit the code terminal, headings, and feature cards shown in your About section</span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {/* Code Terminal Box settings */}
+              <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: 10, border: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#0284c7', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.75rem' }}>
+                  // Terminal Code Window: developer.config.ts
+                </span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                    <Field label="Terminal Name" k="terminalName" placeholder="Ananthkumar Srilambotharasarma" />
+                    <Field label="Terminal Role" k="terminalRole" placeholder="Fullstack Developer" />
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                    <Field label="Terminal Location" k="terminalLocation" placeholder="Global Remote" />
+                    <Field label="Terminal Status" k="terminalStatus" placeholder="Building scalable web applications" />
+                  </div>
+                  <Field label="Tech Stack (comma separated: React, Node.js, TypeScript...)" k="terminalStack" placeholder="React, Node.js, TypeScript, MongoDB" />
+                </div>
+              </div>
+
+              {/* Main About Heading & Bio */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <Field label="About Main Heading" k="aboutHeading" placeholder="Architecting High-Performance Web Applications" />
+                <Field label="About Bio Description" k="aboutBio" type="textarea" placeholder="I'm a Fullstack Developer who builds fast, polished web and mobile apps..." />
+              </div>
+
+              {/* 4 Feature Pillars */}
+              <div>
+                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.75rem' }}>
+                  4 Feature Highlight Cards (Pillars)
+                </span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {/* Pillar 1 */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '60px 1fr 1.5fr', gap: '0.5rem', alignItems: 'center' }}>
+                    <input value={settings.pillar1Icon || '⚡'} onChange={e => set('pillar1Icon', e.target.value)} style={{ ...inp, textAlign: 'center', fontSize: '1.2rem', padding: '0.4rem' }} title="Pillar 1 Icon" />
+                    <input value={settings.pillar1Title || ''} onChange={e => set('pillar1Title', e.target.value)} placeholder="Scalable Systems" style={inp} />
+                    <input value={settings.pillar1Desc || ''} onChange={e => set('pillar1Desc', e.target.value)} placeholder="Microservices, APIs & Cloud Deployments" style={inp} />
+                  </div>
+
+                  {/* Pillar 2 */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '60px 1fr 1.5fr', gap: '0.5rem', alignItems: 'center' }}>
+                    <input value={settings.pillar2Icon || '🎨'} onChange={e => set('pillar2Icon', e.target.value)} style={{ ...inp, textAlign: 'center', fontSize: '1.2rem', padding: '0.4rem' }} title="Pillar 2 Icon" />
+                    <input value={settings.pillar2Title || ''} onChange={e => set('pillar2Title', e.target.value)} placeholder="Pixel-Perfect UI" style={inp} />
+                    <input value={settings.pillar2Desc || ''} onChange={e => set('pillar2Desc', e.target.value)} placeholder="Fluid animations & glassmorphism UX" style={inp} />
+                  </div>
+
+                  {/* Pillar 3 */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '60px 1fr 1.5fr', gap: '0.5rem', alignItems: 'center' }}>
+                    <input value={settings.pillar3Icon || '🚀'} onChange={e => set('pillar3Icon', e.target.value)} style={{ ...inp, textAlign: 'center', fontSize: '1.2rem', padding: '0.4rem' }} title="Pillar 3 Icon" />
+                    <input value={settings.pillar3Title || ''} onChange={e => set('pillar3Title', e.target.value)} placeholder="High Performance" style={inp} />
+                    <input value={settings.pillar3Desc || ''} onChange={e => set('pillar3Desc', e.target.value)} placeholder="Sub-second page loads & optimized assets" style={inp} />
+                  </div>
+
+                  {/* Pillar 4 */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '60px 1fr 1.5fr', gap: '0.5rem', alignItems: 'center' }}>
+                    <input value={settings.pillar4Icon || '🛡️'} onChange={e => set('pillar4Icon', e.target.value)} style={{ ...inp, textAlign: 'center', fontSize: '1.2rem', padding: '0.4rem' }} title="Pillar 4 Icon" />
+                    <input value={settings.pillar4Title || ''} onChange={e => set('pillar4Title', e.target.value)} placeholder="Security & Integrity" style={inp} />
+                    <input value={settings.pillar4Desc || ''} onChange={e => set('pillar4Desc', e.target.value)} placeholder="JWT Auth, CORS, and SQL/NoSQL safety" style={inp} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Personal info */}
           <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.5rem' }}>
             <h3 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: 700, color: '#111827', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem' }}>Personal Info</h3>
@@ -143,11 +312,10 @@ export default function SettingsAdmin() {
                 <Field label="Full Name" k="name" />
                 <Field label="Nickname / Style Name" k="nickname" />
               </div>
-              <Field label="Title / Role" k="title" />
-              <Field label="Bio" k="bio" type="textarea" />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <ImagePicker label="Avatar / Hero Image URL" value={settings.avatarUrl || ''} onChange={val => set('avatarUrl', val)} />
-                <ImagePicker label="About Section Image URL" value={settings.aboutImageUrl || ''} onChange={val => set('aboutImageUrl', val)} />
+              <Field label="Hero Title / Main Headline" k="title" />
+              <Field label="Hero Bio" k="bio" type="textarea" />
+              <div>
+                <ImagePicker label="Avatar / Hero Profile Photo URL" value={settings.avatarUrl || ''} onChange={val => set('avatarUrl', val)} />
               </div>
             </div>
           </div>
@@ -215,8 +383,8 @@ export default function SettingsAdmin() {
                       const file = e.target.files?.[0];
                       if (file) {
                         const reader = new FileReader();
-                        reader.onload = (event) => {
-                          const result = event.target?.result as string;
+                        reader.onloadend = () => {
+                          const result = reader.result as string;
                           set('cvUrl', result);
                         };
                         reader.readAsDataURL(file);
@@ -355,11 +523,6 @@ export default function SettingsAdmin() {
               />
             </div>
           </div>
-
-          <button onClick={save} disabled={saving}
-            style={{ padding: '0.85rem', borderRadius: 8, border: 'none', background: saved ? '#22c55e' : '#00f5ff', color: '#050816', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', fontFamily: 'Inter, sans-serif', transition: 'background 0.3s' }}>
-            {saving ? 'Saving...' : saved ? '✓ Saved!' : 'Save Settings'}
-          </button>
         </div>
 
         {/* Right: live preview */}
@@ -372,6 +535,15 @@ export default function SettingsAdmin() {
               </h2>
               <p style={{ color: '#d1d5db', fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>{settings.title || 'Your Title'}</p>
               <p style={{ color: '#9ca3af', fontSize: '0.875rem', lineHeight: 1.7 }}>{settings.bio || 'Your bio...'}</p>
+            </div>
+
+            {/* About preview card */}
+            <div style={{ background: 'rgba(15, 23, 42, 0.9)', border: '1px solid rgba(56, 189, 248, 0.3)', borderRadius: 10, padding: '1rem', fontSize: '0.8rem' }}>
+              <div style={{ color: '#38bdf8', fontWeight: 700, marginBottom: 4 }}>// About Section Preview</div>
+              <div style={{ color: '#f8fafc', fontWeight: 700, marginBottom: 4 }}>{settings.aboutHeading || DEFAULT.aboutHeading}</div>
+              <div style={{ color: '#94a3b8', fontSize: '0.75rem', lineHeight: 1.4 }}>
+                Terminal: {settings.terminalName || DEFAULT.terminalName} • {settings.terminalRole || DEFAULT.terminalRole}
+              </div>
             </div>
 
             {settings.avatarUrl && (
@@ -392,6 +564,18 @@ export default function SettingsAdmin() {
           </div>
         </div>
       </div>
+
+      {/* Floating Unsaved Changes Bar */}
+      <UnsavedChangesBar
+        hasChanges={hasChanges}
+        saving={saving}
+        saved={saved}
+        onSave={save}
+        onCancel={cancelChanges}
+        message="You have unsaved settings changes"
+        saveLabel="Save Settings"
+        cancelLabel="Cancel / Undo"
+      />
     </div>
   );
 }

@@ -3,14 +3,40 @@ import { useIntersection } from '../hooks/useIntersection';
 
 export default function About({ settings }: { settings: any }) {
   const [ref, isVisible] = useIntersection(0.1);
-  const bio = settings?.bio || 'I build scalable web apps from pixel to production with modern frameworks and robust backend architecture.';
-  const name = settings?.name || 'SriLambo';
+
+  // Dynamic Content with defaults
+  const bio = settings?.aboutBio || settings?.bio || "I'm a Fullstack Developer who builds fast, polished web and mobile apps, from smooth interactive frontends to secure, scalable backends. I care about clean code, great UX, and shipping products that actually work in the real world.";
+  const name = settings?.terminalName || settings?.name || 'Ananthkumar Srilambotharasarma';
+  const role = settings?.terminalRole || settings?.title || 'Fullstack Developer';
+  const location = settings?.terminalLocation || 'Global Remote';
+  const stack = (settings?.terminalStack || 'React, Node.js, TypeScript, MongoDB')
+    .split(',')
+    .map((s: string) => s.trim())
+    .filter(Boolean);
+  const status = settings?.terminalStatus || 'Building scalable web applications';
+  const heading = settings?.aboutHeading || 'Architecting High-Performance Web Applications';
 
   const pillars = [
-    { label: 'Scalable Systems', desc: 'Microservices, APIs & Cloud Deployments', icon: '⚡' },
-    { label: 'Pixel-Perfect UI', desc: 'Fluid animations & glassmorphism UX', icon: '🎨' },
-    { label: 'High Performance', desc: 'Sub-second page loads & optimized assets', icon: '🚀' },
-    { label: 'Security & Integrity', desc: 'JWT Auth, CORS, and SQL/NoSQL safety', icon: '🛡️' },
+    { 
+      label: settings?.pillar1Title || 'Scalable Systems', 
+      desc: settings?.pillar1Desc || 'Microservices, APIs & Cloud Deployments', 
+      icon: settings?.pillar1Icon || '⚡' 
+    },
+    { 
+      label: settings?.pillar2Title || 'Pixel-Perfect UI', 
+      desc: settings?.pillar2Desc || 'Fluid animations & glassmorphism UX', 
+      icon: settings?.pillar2Icon || '🎨' 
+    },
+    { 
+      label: settings?.pillar3Title || 'High Performance', 
+      desc: settings?.pillar3Desc || 'Sub-second page loads & optimized assets', 
+      icon: settings?.pillar3Icon || '🚀' 
+    },
+    { 
+      label: settings?.pillar4Title || 'Security & Integrity', 
+      desc: settings?.pillar4Desc || 'JWT Auth, CORS, and SQL/NoSQL safety', 
+      icon: settings?.pillar4Icon || '🛡️' 
+    },
   ];
 
   return (
@@ -63,84 +89,30 @@ export default function About({ settings }: { settings: any }) {
                 <span style={{ color: '#94a3b8' }}>name:</span> <span style={{ color: '#34d399' }}>'{name}'</span>,
               </div>
               <div style={{ paddingLeft: '1.25rem' }}>
-                <span style={{ color: '#94a3b8' }}>role:</span> <span style={{ color: '#fbbf24' }}>'{settings?.title || 'Fullstack Engineer'}'</span>,
+                <span style={{ color: '#94a3b8' }}>role:</span> <span style={{ color: '#fbbf24' }}>'{role}'</span>,
               </div>
               <div style={{ paddingLeft: '1.25rem' }}>
-                <span style={{ color: '#94a3b8' }}>location:</span> <span style={{ color: '#34d399' }}>'{settings?.location || 'Global Remote'}'</span>,
+                <span style={{ color: '#94a3b8' }}>location:</span> <span style={{ color: '#34d399' }}>'{location}'</span>,
               </div>
               <div style={{ paddingLeft: '1.25rem' }}>
-                <span style={{ color: '#94a3b8' }}>stack:</span> [<span style={{ color: '#38bdf8' }}>'React'</span>, <span style={{ color: '#38bdf8' }}>'Node.js'</span>, <span style={{ color: '#38bdf8' }}>'TypeScript'</span>, <span style={{ color: '#38bdf8' }}>'MongoDB'</span>],
+                <span style={{ color: '#94a3b8' }}>stack:</span> [
+                {stack.map((item: string, idx: number) => (
+                  <span key={item}>
+                    <span style={{ color: '#38bdf8' }}>'{item}'</span>
+                    {idx < stack.length - 1 ? ', ' : ''}
+                  </span>
+                ))}
+                ],
               </div>
               <div style={{ paddingLeft: '1.25rem' }}>
-                <span style={{ color: '#94a3b8' }}>status:</span> <span style={{ color: '#10b981' }}>'Building scalable web applications'</span>
+                <span style={{ color: '#94a3b8' }}>status:</span> <span style={{ color: '#10b981' }}>'{status}'</span>
               </div>
               <div>&#125;;</div>
             </div>
           </div>
 
-          {/* Background Ambient Glow */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: -20,
-              background: 'radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%)',
-              borderRadius: '50%',
-              zIndex: -1,
-              pointerEvents: 'none',
-            }}
-          />
-        </motion.div>
-
-        {/* Right Side: Text Description & Pillars */}
-        <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          animate={isVisible ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <div style={{ display: 'inline-block', marginBottom: '0.75rem' }}>
-            <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.15em', fontFamily: 'var(--font-mono)' }}>
-              // ABOUT ME
-            </span>
-          </div>
-
-          <h2 style={{ fontSize: 'clamp(2.25rem, 4vw, 3.25rem)', fontWeight: 900, marginBottom: '1.25rem', lineHeight: 1.15 }}>
-            Architecting High-Performance <span className="gradient-text">Web Applications</span>
-          </h2>
-
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', lineHeight: 1.8, marginBottom: '2rem' }}>
-            {bio}
-          </p>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-            {pillars.map((item) => (
-              <div
-                key={item.label}
-                className="glass-card"
-                style={{
-                  padding: '1rem 1.25rem',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '0.85rem',
-                  borderRadius: '1rem',
-                  background: 'rgba(15, 23, 42, 0.45)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
-                }}
-              >
-                <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>{item.icon}</span>
-                <div>
-                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 2 }}>
-                    {item.label}
-                  </h4>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                    {item.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Download CV Action Button */}
-          <div style={{ marginTop: '2rem' }}>
+          {/* Download CV Action Button under code terminal */}
+          <div style={{ marginTop: '1.5rem', display: 'flex' }}>
             <a 
               href={settings?.cvUrl || '#contact'} 
               download={settings?.cvUrl && settings.cvUrl.startsWith('data:') ? `${settings?.name || 'Srilambo'}_CV.pdf` : undefined}
@@ -177,6 +149,74 @@ export default function About({ settings }: { settings: any }) {
                 <span>📄</span>
               </button>
             </a>
+          </div>
+
+          {/* Background Ambient Glow */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: -20,
+              background: 'radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%)',
+              borderRadius: '50%',
+              zIndex: -1,
+              pointerEvents: 'none',
+            }}
+          />
+        </motion.div>
+
+        {/* Right Side: Text Description & Pillars */}
+        <motion.div
+          initial={{ opacity: 0, x: 40 }}
+          animate={isVisible ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <div style={{ display: 'inline-block', marginBottom: '0.75rem' }}>
+            <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.15em', fontFamily: 'var(--font-mono)' }}>
+              // ABOUT ME
+            </span>
+          </div>
+
+          <h2 style={{ fontSize: 'clamp(2.25rem, 4vw, 3.25rem)', fontWeight: 900, marginBottom: '1.25rem', lineHeight: 1.15 }}>
+            {heading.includes('Web Applications') ? (
+              <>
+                {heading.replace('Web Applications', '')}
+                <span className="gradient-text">Web Applications</span>
+              </>
+            ) : (
+              heading
+            )}
+          </h2>
+
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', lineHeight: 1.8, marginBottom: '2rem' }}>
+            {bio}
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+            {pillars.map((item) => (
+              <div
+                key={item.label}
+                className="glass-card"
+                style={{
+                  padding: '1rem 1.25rem',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.85rem',
+                  borderRadius: '1rem',
+                  background: 'rgba(15, 23, 42, 0.45)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                }}
+              >
+                <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>{item.icon}</span>
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 2 }}>
+                    {item.label}
+                  </h4>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </motion.div>
 
