@@ -27,7 +27,14 @@ export function useAdminApi() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || `HTTP ${res.status}`);
       }
-      return res.json();
+      const data = await res.json();
+      if (['POST', 'PUT', 'DELETE'].includes(method.toUpperCase())) {
+        window.dispatchEvent(new Event('portfolio_data_updated'));
+        try {
+          localStorage.setItem('portfolio_last_updated', Date.now().toString());
+        } catch (_) {}
+      }
+      return data;
     },
     [token]
   );

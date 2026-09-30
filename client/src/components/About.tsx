@@ -24,6 +24,24 @@ export default function About({ settings }: { settings: any }) {
           transition={{ duration: 0.8 }}
           style={{ position: 'relative' }}
         >
+          {settings?.aboutImageUrl && (
+            <div 
+              style={{ 
+                marginBottom: '1.25rem', 
+                borderRadius: '1.25rem', 
+                overflow: 'hidden', 
+                border: '1px solid rgba(255,255,255,0.1)',
+                boxShadow: '0 12px 30px rgba(0,0,0,0.5)',
+                maxHeight: 280
+              }}
+            >
+              <img 
+                src={settings.aboutImageUrl} 
+                alt={`${name} About`} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+              />
+            </div>
+          )}
           <div
             className="glass-card"
             style={{

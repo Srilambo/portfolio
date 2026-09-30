@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { requireAdmin } from '../middleware/requireAdmin.js';
 import { Setting, DataStore } from '../db/schema.js';
+import { getCachedSettings, setCachedSettings } from '../db/dataCache.js';
 
 const router = Router();
 router.use(requireAdmin);
@@ -81,8 +82,7 @@ router.post('/restore', async (req, res) => {
 // GET /api/admin/settings
 router.get('/', async (_req, res) => {
   try {
-    const rows = await Setting.find().lean();
-    const obj = Object.fromEntries(rows.map(r => [r.key, r.value]));
+    const obj = await getCachedSettings();
     
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.setHeader('Pragma', 'no-cache');
@@ -98,15 +98,7 @@ router.get('/', async (_req, res) => {
 router.put('/', async (req, res) => {
   try {
     const entries = Object.entries(req.body as Record<string, string>);
-    await Promise.all(
-      entries.map(([key, value]) =>
-        Setting.findOneAndUpdate(
-          { key },
-          { key, value: String(value) },
-          { upsert: true, new: true }
-        )
-      )
-    );
+    await setCachedSettings(entries);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to save settings' });

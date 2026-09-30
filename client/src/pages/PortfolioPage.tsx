@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import About from '../components/About';
@@ -20,30 +20,71 @@ import { experiences as defaultExperience } from '../data/experience';
 import { skills as defaultSkills } from '../data/skills';
 
 export default function PortfolioPage() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<any>(() => {
+    try {
+      const cached = sessionStorage.getItem('portfolio_cached_data');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [loading, setLoading] = useState(() => {
+    try {
+      return !sessionStorage.getItem('portfolio_cached_data');
+    } catch {
+      return true;
+    }
+  });
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = useCallback(async (showLoading = false) => {
+    if (showLoading && !data) setLoading(true);
+    try {
+      const res = await fetch(getApiUrl(`/api/data?t=${Date.now()}`));
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.details || errorData.error || `HTTP Error: ${res.status}`);
+      }
+      const d = await res.json();
+      setData(d);
+      setError(null);
       try {
-        const res = await fetch(getApiUrl(`/api/data?t=${Date.now()}`));
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
-          throw new Error(errorData.details || errorData.error || `HTTP Error: ${res.status}`);
-        }
-        const d = await res.json();
-        setData(d);
-        setLoading(false);
-      } catch (err: any) {
-        setError(err.message);
-        setLoading(false);
+        sessionStorage.setItem('portfolio_cached_data', JSON.stringify(d));
+      } catch (_) {}
+    } catch (err: any) {
+      if (!data) setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    fetchData(true);
+
+    const handleUpdate = () => fetchData(false);
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'portfolio_last_updated') {
+        fetchData(false);
       }
     };
-    fetchData();
-  }, []);
+    const handleFocus = () => {
+      if (document.visibilityState === 'visible') {
+        fetchData(false);
+      }
+    };
 
+    window.addEventListener('portfolio_data_updated', handleUpdate);
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleFocus);
 
+    return () => {
+      window.removeEventListener('portfolio_data_updated', handleUpdate);
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleFocus);
+    };
+  }, [fetchData]);
 
   if (error) {
     return (
@@ -76,9 +117,9 @@ export default function PortfolioPage() {
 
   const { settings = {}, projects = [], skills = [], experience = [], blogs = [], services = [], reviews = [] } = data || {};
 
-  const activeProjects = (Array.isArray(projects) && projects.length > 0) ? projects : defaultProjects;
-  const activeSkills = (Array.isArray(skills) && skills.length > 0) ? skills : defaultSkills;
-  const activeExperience = (Array.isArray(experience) && experience.length > 0) ? experience : defaultExperience;
+  const activeProjects = (Array.isArray(projects) && projects.length > 0) ? projects : (data?.projects !== undefined ? projects : defaultProjects);
+  const activeSkills = (Array.isArray(skills) && skills.length > 0) ? skills : (data?.skills !== undefined ? skills : defaultSkills);
+  const activeExperience = (Array.isArray(experience) && experience.length > 0) ? experience : (data?.experience !== undefined ? experience : defaultExperience);
 
   return (
     <>

@@ -78,6 +78,17 @@ export default function SettingsAdmin() {
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        save();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [settings]);
+
   const inp = { width: '100%', padding: '0.65rem 0.9rem', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: '0.9rem', fontFamily: 'Inter, sans-serif', boxSizing: 'border-box' as const, outline: 'none' };
 
   const Field = ({ label, k, type = 'text' }: { label: string; k: keyof Settings; type?: string }) => (
@@ -91,7 +102,35 @@ export default function SettingsAdmin() {
 
   return (
     <div style={{ maxWidth: 1000 }}>
-      <h2 style={{ margin: '0 0 2rem', fontSize: '1.3rem', fontWeight: 800, color: '#111827' }}>Settings</h2>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: '#111827' }}>Settings</h2>
+          <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Press Ctrl+S to save settings anytime</span>
+        </div>
+        <button 
+          onClick={save} 
+          disabled={saving}
+          style={{ 
+            padding: '0.6rem 1.4rem', 
+            borderRadius: 8, 
+            border: 'none', 
+            background: saved ? '#22c55e' : '#00f5ff', 
+            color: '#050816', 
+            fontWeight: 700, 
+            fontSize: '0.9rem', 
+            cursor: saving ? 'not-allowed' : 'pointer', 
+            fontFamily: 'Inter, sans-serif', 
+            transition: 'all 0.3s ease',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            boxShadow: '0 4px 14px rgba(0, 245, 255, 0.3)'
+          }}
+        >
+          <span>💾</span>
+          <span>{saving ? 'Saving to MongoDB...' : saved ? '✓ Saved to MongoDB!' : 'Save Settings'}</span>
+        </button>
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '2rem', alignItems: 'start' }}>
         {/* Left: form */}

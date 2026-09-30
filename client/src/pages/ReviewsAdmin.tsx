@@ -56,20 +56,72 @@ export default function ReviewsAdmin() {
     );
   };
 
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const saveAll = async () => {
+    setSaving(true);
+    try {
+      const data = await request<Review[]>('/api/admin/reviews');
+      setReviews(data);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err: any) {
+      alert('Failed to refresh reviews: ' + (err.message || 'Unknown error'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveAll();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [reviews]);
+
   if (loading) return <div style={{ color: '#6b7280', padding: '2rem' }}>Loading reviews...</div>;
   if (error) return <div style={{ color: '#ef4444', padding: '2rem' }}>Error: {error}</div>;
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-        <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: '#111827' }}>
-          Customer Reviews
-          {reviews.filter(r => !r.approved).length > 0 && (
-            <span style={{ marginLeft: 8, background: '#fbbf24', color: '#000', fontSize: '0.75rem', fontWeight: 700, padding: '0.1rem 0.55rem', borderRadius: 99 }}>
-              {reviews.filter(r => !r.approved).length} pending
-            </span>
-          )}
-        </h2>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: '#111827' }}>
+            Customer Reviews
+            {reviews.filter(r => !r.approved).length > 0 && (
+              <span style={{ marginLeft: 8, background: '#fbbf24', color: '#000', fontSize: '0.75rem', fontWeight: 700, padding: '0.1rem 0.55rem', borderRadius: 99 }}>
+                {reviews.filter(r => !r.approved).length} pending
+              </span>
+            )}
+          </h2>
+          <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Press Ctrl+S to save/sync changes anytime</span>
+        </div>
+        <button
+          onClick={() => saveAll()}
+          disabled={saving}
+          style={{
+            padding: '0.6rem 1.25rem',
+            borderRadius: 8,
+            border: '1px solid #10b981',
+            background: saved ? '#10b981' : 'rgba(16, 185, 129, 0.1)',
+            color: saved ? '#fff' : '#059669',
+            fontWeight: 700,
+            cursor: saving ? 'not-allowed' : 'pointer',
+            fontFamily: 'Inter, sans-serif',
+            transition: 'all 0.3s ease',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem'
+          }}
+        >
+          <span>💾</span>
+          <span>{saving ? 'Syncing to MongoDB...' : saved ? '✓ Synced & Saved to MongoDB!' : 'Save & Sync Reviews'}</span>
+        </button>
       </div>
 
       <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>

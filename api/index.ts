@@ -223,6 +223,25 @@ app.put('/api/admin/data/:key', async (req, res) => {
   } catch { res.status(500).json({ error: 'Failed to save data' }); }
 });
 
+async function setDataStore(key: string, value: unknown) {
+  await DataStore.findOneAndUpdate({ key }, { key, value: JSON.stringify(value) }, { upsert: true, new: true });
+}
+
+app.get('/api/admin/projects', async (_req, res) => res.json(await getDataStore('projects') ?? []));
+app.post('/api/admin/projects', async (req, res) => { await setDataStore('projects', req.body); res.json({ success: true }); });
+
+app.get('/api/admin/skills', async (_req, res) => res.json(await getDataStore('skills') ?? []));
+app.post('/api/admin/skills', async (req, res) => { await setDataStore('skills', req.body); res.json({ success: true }); });
+
+app.get('/api/admin/experience', async (_req, res) => res.json(await getDataStore('experience') ?? []));
+app.post('/api/admin/experience', async (req, res) => { await setDataStore('experience', req.body); res.json({ success: true }); });
+
+app.get('/api/admin/blogs', async (_req, res) => res.json(await getDataStore('blogs') ?? []));
+app.post('/api/admin/blogs', async (req, res) => { await setDataStore('blogs', req.body); res.json({ success: true }); });
+
+app.get('/api/admin/services', async (_req, res) => res.json(await getDataStore('services') ?? []));
+app.post('/api/admin/services', async (req, res) => { await setDataStore('services', req.body); res.json({ success: true }); });
+
 // Admin Messages
 app.get('/api/admin/messages', requireAdmin, async (_req, res) => {
   try { const msgs = await Message.find().sort({ createdAt: -1 }).lean(); res.json(msgs.map(m => ({ ...m, id: m._id.toString(), created_at: m.createdAt }))); }

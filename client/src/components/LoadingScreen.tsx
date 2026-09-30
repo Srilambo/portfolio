@@ -6,10 +6,10 @@ export default function LoadingScreen({ isApiLoading = false }: { isApiLoading?:
 
   useEffect(() => {
     if (!isApiLoading) {
-      // Wait for at least 2.5 seconds total before hiding
+      // Smooth swift reveal once API is ready
       const timer = setTimeout(() => {
         setShow(false);
-      }, 2500);
+      }, 350);
       return () => clearTimeout(timer);
     }
   }, [isApiLoading]);
@@ -20,8 +20,8 @@ export default function LoadingScreen({ isApiLoading = false }: { isApiLoading?:
         <motion.div
           key="loading-screen"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.05 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          exit={{ opacity: 0, scale: 1.02 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           style={{
             position: 'fixed',
             inset: 0,

@@ -78,20 +78,34 @@ export default function WhatsAppClicksAdmin() {
             Every time a visitor clicks your WhatsApp button — you get notified on your phone + recorded here.
           </p>
         </div>
-        {clicks.length > 0 && (
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
           <button
-            onClick={clearAll}
-            disabled={clearing}
+            onClick={load}
             style={{
-              padding: '0.5rem 1rem', borderRadius: 8,
-              border: '1px solid #fecaca', background: '#fff5f5',
-              color: '#ef4444', fontWeight: 700, fontSize: '0.8rem',
-              cursor: clearing ? 'not-allowed' : 'pointer', fontFamily: 'Inter, sans-serif',
+              padding: '0.55rem 1rem', borderRadius: 8,
+              border: '1px solid #38bdf8', background: 'rgba(56,189,248,0.08)',
+              color: '#0284c7', fontWeight: 700, fontSize: '0.8rem',
+              cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+              display: 'flex', alignItems: 'center', gap: '0.35rem'
             }}
           >
-            {clearing ? 'Clearing...' : '🗑 Clear All'}
+            <span>🔄</span> Refresh
           </button>
-        )}
+          {clicks.length > 0 && (
+            <button
+              onClick={clearAll}
+              disabled={clearing}
+              style={{
+                padding: '0.55rem 1rem', borderRadius: 8,
+                border: '1px solid #fecaca', background: '#fff5f5',
+                color: '#ef4444', fontWeight: 700, fontSize: '0.8rem',
+                cursor: clearing ? 'not-allowed' : 'pointer', fontFamily: 'Inter, sans-serif',
+              }}
+            >
+              {clearing ? 'Clearing...' : '🗑 Clear All'}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Stats Row */}

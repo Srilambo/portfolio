@@ -1,20 +1,48 @@
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import './styles/admin.css';
 
 import PrivateRoute from './components/PrivateRoute';
-import PortfolioPage from './pages/PortfolioPage';
-import AdminLogin from './pages/AdminLogin';
-import AdminDashboard from './pages/AdminDashboard';
-import ProjectsAdmin from './pages/ProjectsAdmin';
-import SkillsAdmin from './pages/SkillsAdmin';
-import ExperienceAdmin from './pages/ExperienceAdmin';
-import ServicesAdmin from './pages/ServicesAdmin';
-import MessagesAdmin from './pages/MessagesAdmin';
-import SettingsAdmin from './pages/SettingsAdmin';
-import BlogsAdmin from './pages/BlogsAdmin';
-import ReviewsAdmin from './pages/ReviewsAdmin';
-import WhatsAppClicksAdmin from './pages/WhatsAppClicksAdmin';
+
+const PortfolioPage       = lazy(() => import('./pages/PortfolioPage'));
+const AdminLogin          = lazy(() => import('./pages/AdminLogin'));
+const AdminDashboard      = lazy(() => import('./pages/AdminDashboard'));
+const ProjectsAdmin       = lazy(() => import('./pages/ProjectsAdmin'));
+const SkillsAdmin         = lazy(() => import('./pages/SkillsAdmin'));
+const ExperienceAdmin     = lazy(() => import('./pages/ExperienceAdmin'));
+const ServicesAdmin       = lazy(() => import('./pages/ServicesAdmin'));
+const MessagesAdmin       = lazy(() => import('./pages/MessagesAdmin'));
+const SettingsAdmin       = lazy(() => import('./pages/SettingsAdmin'));
+const BlogsAdmin          = lazy(() => import('./pages/BlogsAdmin'));
+const ReviewsAdmin        = lazy(() => import('./pages/ReviewsAdmin'));
+const WhatsAppClicksAdmin = lazy(() => import('./pages/WhatsAppClicksAdmin'));
+
+function RouteLoadingFallback() {
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '4rem 2rem',
+      color: '#38bdf8',
+      gap: '0.75rem',
+      fontFamily: 'Inter, sans-serif',
+      fontSize: '0.9rem',
+      fontWeight: 600,
+    }}>
+      <div style={{
+        width: 22,
+        height: 22,
+        border: '2px solid rgba(56, 189, 248, 0.2)',
+        borderTopColor: '#38bdf8',
+        borderRadius: '50%',
+        animation: 'adm-spin 0.6s linear infinite',
+      }} />
+      <span>Loading screen...</span>
+    </div>
+  );
+}
 
 const DASH_CARDS = [
   {
@@ -264,25 +292,27 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Routes>
-          <Route path="/" element={<PortfolioPage />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route element={<PrivateRoute />}>
-            <Route element={<AdminDashboard />}>
-              <Route path="/admin"             element={<DashboardHome />} />
-              <Route path="/admin/projects"    element={<ProjectsAdmin />} />
-              <Route path="/admin/skills"      element={<SkillsAdmin />} />
-              <Route path="/admin/experience"  element={<ExperienceAdmin />} />
-              <Route path="/admin/services"    element={<ServicesAdmin />} />
-              <Route path="/admin/blogs"       element={<BlogsAdmin />} />
-              <Route path="/admin/messages"    element={<MessagesAdmin />} />
-              <Route path="/admin/reviews"     element={<ReviewsAdmin />} />
-              <Route path="/admin/whatsapp"    element={<WhatsAppClicksAdmin />} />
-              <Route path="/admin/settings"    element={<SettingsAdmin />} />
+        <Suspense fallback={<RouteLoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<PortfolioPage />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route element={<PrivateRoute />}>
+              <Route element={<AdminDashboard />}>
+                <Route path="/admin"             element={<DashboardHome />} />
+                <Route path="/admin/projects"    element={<ProjectsAdmin />} />
+                <Route path="/admin/skills"      element={<SkillsAdmin />} />
+                <Route path="/admin/experience"  element={<ExperienceAdmin />} />
+                <Route path="/admin/services"    element={<ServicesAdmin />} />
+                <Route path="/admin/blogs"       element={<BlogsAdmin />} />
+                <Route path="/admin/messages"    element={<MessagesAdmin />} />
+                <Route path="/admin/reviews"     element={<ReviewsAdmin />} />
+                <Route path="/admin/whatsapp"    element={<WhatsAppClicksAdmin />} />
+                <Route path="/admin/settings"    element={<SettingsAdmin />} />
+              </Route>
             </Route>
-          </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </AuthProvider>
   );

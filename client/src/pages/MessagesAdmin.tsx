@@ -25,15 +25,37 @@ export default function MessagesAdmin() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-        <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: '#111827' }}>
-          Messages
-          {messages.filter(m => m.status === 'new').length > 0 && (
-            <span style={{ marginLeft: 8, background: '#2563eb', color: '#fff', fontSize: '0.75rem', fontWeight: 700, padding: '0.1rem 0.55rem', borderRadius: 99 }}>
-              {messages.filter(m => m.status === 'new').length} new
-            </span>
-          )}
-        </h2>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: '#111827' }}>
+            Messages
+            {messages.filter(m => m.status === 'new').length > 0 && (
+              <span style={{ marginLeft: 8, background: '#2563eb', color: '#fff', fontSize: '0.75rem', fontWeight: 700, padding: '0.1rem 0.55rem', borderRadius: 99 }}>
+                {messages.filter(m => m.status === 'new').length} new
+              </span>
+            )}
+          </h2>
+          <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Click status row or action buttons to update</span>
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          style={{
+            padding: '0.6rem 1.25rem',
+            borderRadius: 8,
+            border: '1px solid #38bdf8',
+            background: 'rgba(56, 189, 248, 0.1)',
+            color: '#0284c7',
+            fontWeight: 700,
+            cursor: 'pointer',
+            fontFamily: 'Inter, sans-serif',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem'
+          }}
+        >
+          <span>🔄</span>
+          <span>Refresh Messages</span>
+        </button>
       </div>
 
       <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
