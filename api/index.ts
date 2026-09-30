@@ -87,7 +87,8 @@ function requireAdmin(req: Request, res: Response, next: NextFunction): void {
   if (!authHeader?.startsWith('Bearer ')) { res.status(401).json({ error: 'No token provided' }); return; }
   const token = authHeader.slice(7);
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as AdminPayload;
+    const JWT_SECRET = process.env.JWT_SECRET || 'srilambo-portfolio-jwt-secret-2025';
+    const payload = jwt.verify(token, JWT_SECRET) as AdminPayload;
     if (payload.role !== 'admin') throw new Error('Forbidden');
     (req as any).admin = payload;
     next();
@@ -140,7 +141,8 @@ app.post('/api/auth/google/callback', async (req, res) => {
     const userData = await userRes.json() as { email: string };
     const allowedEmail = process.env.ADMIN_EMAIL || 'srilambotharan@gmail.com';
     if (!userData.email || userData.email.toLowerCase() !== allowedEmail.toLowerCase()) { res.status(403).json({ error: 'Unauthorized Google account' }); return; }
-    const token = jwt.sign({ role: 'admin', email: userData.email }, process.env.JWT_SECRET!, { expiresIn: '24h' });
+    const JWT_SECRET = process.env.JWT_SECRET || 'srilambo-portfolio-jwt-secret-2025';
+    const token = jwt.sign({ role: 'admin', email: userData.email }, JWT_SECRET, { expiresIn: '30d' });
     res.json({ token });
   } catch (err: any) { res.status(500).json({ error: 'Google Authentication failed', details: err?.message }); }
 });

@@ -115,14 +115,32 @@ export default function About({ settings }: { settings: any }) {
 
           {/* Download CV Action Button under code terminal */}
           <div style={{ marginTop: '1.5rem', display: 'flex' }}>
-            <a 
-              href={settings?.cvUrl || '#contact'} 
-              download={settings?.cvUrl && settings.cvUrl.startsWith('data:') ? `${settings?.name || 'Srilambo'}_CV.pdf` : undefined}
-              target={settings?.cvUrl && !settings.cvUrl.startsWith('data:') ? '_blank' : undefined}
-              rel={settings?.cvUrl && !settings.cvUrl.startsWith('data:') ? 'noopener noreferrer' : undefined}
-              style={{ textDecoration: 'none', display: 'inline-block' }}
-            >
-              <button
+            {(() => {
+              const getCvDownloadFilename = () => {
+                if (!settings?.cvUrl) return undefined;
+                if (settings?.cvFilename) return settings.cvFilename;
+                const baseName = (settings?.name || 'Srilambo').replace(/\s+/g, '_');
+                const url = settings.cvUrl;
+                if (url.startsWith('data:')) {
+                  if (url.includes('wordprocessingml') || url.includes('officedocument') || url.includes('docx')) return `${baseName}_CV.docx`;
+                  if (url.includes('msword') || url.includes('doc')) return `${baseName}_CV.doc`;
+                  if (url.includes('pdf')) return `${baseName}_CV.pdf`;
+                  return `${baseName}_CV`;
+                }
+                return undefined;
+              };
+
+              const downloadName = getCvDownloadFilename();
+
+              return (
+                <a 
+                  href={settings?.cvUrl || '#contact'} 
+                  download={downloadName}
+                  target={settings?.cvUrl && !settings.cvUrl.startsWith('data:') ? '_blank' : undefined}
+                  rel={settings?.cvUrl && !settings.cvUrl.startsWith('data:') ? 'noopener noreferrer' : undefined}
+                  style={{ textDecoration: 'none', display: 'inline-block' }}
+                >
+                  <button
                 style={{ 
                   background: 'var(--gradient)', 
                   color: '#020617', 
@@ -151,7 +169,9 @@ export default function About({ settings }: { settings: any }) {
                 <span>📄</span>
               </button>
             </a>
-          </div>
+          );
+        })()}
+      </div>
 
           {/* Background Ambient Glow */}
           <div

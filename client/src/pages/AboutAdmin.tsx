@@ -11,6 +11,7 @@ interface TerminalSettings {
   terminalStack?: string;
   terminalStatus?: string;
   cvUrl?: string;
+  cvFilename?: string;
   aboutHeading?: string;
   aboutSubheading?: string;
   aboutBio?: string;
@@ -29,6 +30,7 @@ const DEFAULTS: TerminalSettings = {
   aboutSubheading: 'Fullstack Software Engineer',
   aboutBio: "I'm a Fullstack Developer who builds fast, polished web and mobile apps, from smooth interactive frontends to secure, scalable backends. I care about clean code, great UX, and shipping products that actually work in the real world.",
   cvUrl: '',
+  cvFilename: '',
 };
 
 export default function AboutAdmin() {
@@ -61,6 +63,7 @@ export default function AboutAdmin() {
           aboutSubheading: data.aboutSubheading || DEFAULTS.aboutSubheading,
           aboutBio: data.aboutBio || data.bio || DEFAULTS.aboutBio,
           cvUrl: data.cvUrl || '',
+          cvFilename: data.cvFilename || '',
         };
         setSettings(merged);
         setOriginalSettings(merged);
@@ -110,17 +113,26 @@ export default function AboutAdmin() {
     updateField('terminalStack', updated);
   };
 
-  // CV File Upload
+  // CV File Upload (Word .docx/.doc, PDF, or all file types)
   const handleCvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 8 * 1024 * 1024) {
-      alert('PDF file must be smaller than 8MB');
+    if (file.size > 15 * 1024 * 1024) {
+      alert('Document file must be smaller than 15MB');
       return;
     }
+    const fileName = file.name;
     const reader = new FileReader();
     reader.onloadend = () => {
-      updateField('cvUrl', reader.result as string);
+      setSettings(prev => {
+        const next = {
+          ...prev,
+          cvUrl: reader.result as string,
+          cvFilename: fileName,
+        };
+        checkHasChanges(next);
+        return next;
+      });
     };
     reader.readAsDataURL(file);
   };
@@ -531,11 +543,11 @@ export default function AboutAdmin() {
 
                 <div>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: 6 }}>
-                    Or Upload PDF Directly (Max 8MB)
+                    Or Upload CV File (Word .docx / .doc, PDF, or Any Document - Max 15MB)
                   </label>
                   <input
                     type="file"
-                    accept=".pdf,application/pdf"
+                    accept=".pdf,.doc,.docx,.rtf,.odt,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,*/*"
                     onChange={handleCvUpload}
                     style={{
                       fontSize: '0.85rem',
@@ -543,17 +555,27 @@ export default function AboutAdmin() {
                       padding: '0.5rem 0',
                     }}
                   />
-                  {settings.cvUrl && settings.cvUrl.startsWith('data:application/pdf') && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: 4 }}>
-                      <span style={{ color: '#16a34a', fontSize: '0.8rem', fontWeight: 600 }}>✓ PDF File Uploaded in Memory</span>
+                  {settings.cvUrl && settings.cvUrl.startsWith('data:') && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: 6, flexWrap: 'wrap' }}>
+                      <span style={{ color: '#16a34a', fontSize: '0.82rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <span>✓</span>
+                        <span>Attached: <strong>{settings.cvFilename || (settings.cvUrl.includes('word') ? 'Word Document.docx' : 'Document')}</strong></span>
+                      </span>
                       <button
                         type="button"
-                        onClick={() => updateField('cvUrl', '')}
+                        onClick={() => {
+                          setSettings(prev => {
+                            const next = { ...prev, cvUrl: '', cvFilename: '' };
+                            checkHasChanges(next);
+                            return next;
+                          });
+                        }}
                         style={{
                           background: 'none',
                           border: 'none',
                           color: '#ef4444',
-                          fontSize: '0.75rem',
+                          fontSize: '0.78rem',
+                          fontWeight: 600,
                           cursor: 'pointer',
                           textDecoration: 'underline',
                         }}

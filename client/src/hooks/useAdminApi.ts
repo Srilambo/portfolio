@@ -25,6 +25,12 @@ export function useAdminApi() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          sessionStorage.removeItem('admin_token');
+          alert('Your admin session has expired. Please sign in again to save your changes.');
+          window.location.href = '/admin/login';
+          throw new Error('Admin session expired. Please log in again.');
+        }
         throw new Error(data.error || `HTTP ${res.status}`);
       }
       const data = await res.json();

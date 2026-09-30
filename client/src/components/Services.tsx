@@ -40,7 +40,18 @@ export default function Services({ settings, services = [] }: { settings: any; s
           {settings?.cvUrl ? (
             <a 
               href={settings.cvUrl} 
-              download={settings.cvUrl.startsWith('data:') ? `${settings.name || 'Srilambo'}_CV.pdf` : undefined}
+              download={(() => {
+                if (settings?.cvFilename) return settings.cvFilename;
+                const baseName = (settings?.name || 'Srilambo').replace(/\s+/g, '_');
+                const url = settings.cvUrl;
+                if (url.startsWith('data:')) {
+                  if (url.includes('wordprocessingml') || url.includes('officedocument') || url.includes('docx')) return `${baseName}_CV.docx`;
+                  if (url.includes('msword') || url.includes('doc')) return `${baseName}_CV.doc`;
+                  if (url.includes('pdf')) return `${baseName}_CV.pdf`;
+                  return `${baseName}_CV`;
+                }
+                return undefined;
+              })()}
               target={settings.cvUrl.startsWith('data:') ? undefined : '_blank'}
               rel={settings.cvUrl.startsWith('data:') ? undefined : 'noopener noreferrer'}
               style={{ textDecoration: 'none', display: 'inline-block' }}

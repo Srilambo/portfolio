@@ -24,7 +24,8 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction): v
   }
   const token = authHeader.slice(7);
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as AdminPayload;
+    const JWT_SECRET = process.env.JWT_SECRET || 'srilambo-portfolio-jwt-secret-2025';
+    const payload = jwt.verify(token, JWT_SECRET) as AdminPayload;
     if (payload.role !== 'admin') throw new Error('Forbidden');
     req.admin = payload;
     next();

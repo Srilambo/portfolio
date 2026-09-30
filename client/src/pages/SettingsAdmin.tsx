@@ -24,6 +24,7 @@ interface Settings {
   metaTitle: string;
   metaDescription: string;
   cvUrl?: string;
+  cvFilename?: string;
   aboutImageUrl?: string;
   statsExperience?: string;
   statsProjects?: string;
@@ -70,6 +71,7 @@ const DEFAULT: Settings = {
   metaTitle: 'Srilambo | Fullstack Developer Portfolio',
   metaDescription: 'React, Node.js, Three.js. Building scalable web apps from pixel to production.',
   cvUrl: '',
+  cvFilename: '',
   statsExperience: '3+',
   statsProjects: '220+',
   statsClients: '60+',
@@ -396,21 +398,26 @@ export default function SettingsAdmin() {
                       fontFamily: 'Inter, sans-serif'
                     }}
                   >
-                    {settings.cvUrl && settings.cvUrl.startsWith('data:') ? 'Change PDF File' : 'Upload PDF File'}
+                    {settings.cvUrl && settings.cvUrl.startsWith('data:') ? 'Change Document File' : 'Upload CV File (Word / PDF)'}
                   </button>
                   
                   <input 
                     id="cv-file-input"
                     type="file" 
-                    accept=".pdf,.doc,.docx"
+                    accept=".pdf,.doc,.docx,.rtf,.odt,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,*/*"
                     style={{ display: 'none' }}
                     onChange={e => {
                       const file = e.target.files?.[0];
                       if (file) {
+                        if (file.size > 15 * 1024 * 1024) {
+                          alert('Document must be smaller than 15MB');
+                          return;
+                        }
                         const reader = new FileReader();
                         reader.onloadend = () => {
                           const result = reader.result as string;
                           set('cvUrl', result);
+                          set('cvFilename', file.name);
                         };
                         reader.readAsDataURL(file);
                       }
@@ -418,9 +425,28 @@ export default function SettingsAdmin() {
                   />
 
                   {settings.cvUrl && settings.cvUrl.startsWith('data:') && (
-                    <span style={{ fontSize: '0.75rem', color: '#22c55e', fontWeight: 600 }}>
-                      ✓ Custom PDF Uploaded (~{(settings.cvUrl.length / 1024).toFixed(1)} KB)
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '0.75rem', color: '#22c55e', fontWeight: 600 }}>
+                        ✓ {settings.cvFilename || (settings.cvUrl.includes('word') ? 'Word Document.docx' : 'Document')} (~{(settings.cvUrl.length / 1024).toFixed(1)} KB)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          set('cvUrl', '');
+                          set('cvFilename', '');
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#ef4444',
+                          fontSize: '0.75rem',
+                          cursor: 'pointer',
+                          textDecoration: 'underline',
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
                   )}
 
                   {settings.cvUrl && !settings.cvUrl.startsWith('data:') && (

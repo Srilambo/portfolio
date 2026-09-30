@@ -57,7 +57,8 @@ router.post('/google/callback', async (req, res) => {
       return res.status(403).json({ error: 'Unauthorized Google account' });
     }
 
-    const token = jwt.sign({ role: 'admin', email: userData.email }, process.env.JWT_SECRET!, { expiresIn: '24h' });
+    const JWT_SECRET = process.env.JWT_SECRET || 'srilambo-portfolio-jwt-secret-2025';
+    const token = jwt.sign({ role: 'admin', email: userData.email }, JWT_SECRET, { expiresIn: '30d' });
     res.json({ token });
   } catch (err: any) {
     console.error('Google Auth Error:', err);
