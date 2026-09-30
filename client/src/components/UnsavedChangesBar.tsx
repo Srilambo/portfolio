@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 interface Props {
   hasChanges: boolean;
@@ -38,6 +38,7 @@ export default function UnsavedChangesBar({
 
   return (
     <div
+      className="unsaved-changes-bar"
       style={{
         position: 'fixed',
         bottom: '24px',

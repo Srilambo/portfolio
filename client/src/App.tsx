@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import './styles/admin.css';
@@ -14,6 +14,7 @@ const ExperienceAdmin     = lazy(() => import('./pages/ExperienceAdmin'));
 const ServicesAdmin       = lazy(() => import('./pages/ServicesAdmin'));
 const MessagesAdmin       = lazy(() => import('./pages/MessagesAdmin'));
 const SettingsAdmin       = lazy(() => import('./pages/SettingsAdmin'));
+const AboutAdmin          = lazy(() => import('./pages/AboutAdmin'));
 const BlogsAdmin          = lazy(() => import('./pages/BlogsAdmin'));
 const ReviewsAdmin        = lazy(() => import('./pages/ReviewsAdmin'));
 const WhatsAppClicksAdmin = lazy(() => import('./pages/WhatsAppClicksAdmin'));
@@ -45,6 +46,16 @@ function RouteLoadingFallback() {
 }
 
 const DASH_CARDS = [
+  {
+    icon: (
+      <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+    label: 'About Card', to: '/admin/about',
+    desc: 'Edit developer.config.ts card',
+    color: '#00f5ff', glow: 'rgba(0,245,255,0.18)',
+  },
   {
     icon: (
       <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -299,6 +310,7 @@ export default function App() {
             <Route element={<PrivateRoute />}>
               <Route element={<AdminDashboard />}>
                 <Route path="/admin"             element={<DashboardHome />} />
+                <Route path="/admin/about"       element={<AboutAdmin />} />
                 <Route path="/admin/projects"    element={<ProjectsAdmin />} />
                 <Route path="/admin/skills"      element={<SkillsAdmin />} />
                 <Route path="/admin/experience"  element={<ExperienceAdmin />} />

@@ -69,11 +69,14 @@ export default function AdminLogin() {
       <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '40%', height: '40%', background: 'rgba(129, 140, 248, 0.15)', filter: 'blur(100px)', borderRadius: '50%' }} />
 
       <div style={{
-        width: 420,
+        width: '100%',
+        maxWidth: 420,
+        margin: '1rem',
+        boxSizing: 'border-box',
         background: 'rgba(15, 23, 42, 0.6)',
         backdropFilter: 'blur(20px)',
         borderRadius: 24,
-        padding: '3.5rem 3rem',
+        padding: '2.5rem 1.5rem',
         border: '1px solid rgba(255, 255, 255, 0.1)',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
         zIndex: 1

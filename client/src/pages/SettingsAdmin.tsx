@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAdminApi } from '../hooks/useAdminApi';
 import ImagePicker from '../components/ImagePicker';
 import UnsavedChangesBar from '../components/UnsavedChangesBar';
@@ -6,6 +7,8 @@ import UnsavedChangesBar from '../components/UnsavedChangesBar';
 interface Settings {
   name: string;
   nickname?: string;
+  terminalFilename?: string;
+  terminalVersion?: string;
   title: string;
   bio: string;
   avatarUrl: string;
@@ -226,7 +229,7 @@ export default function SettingsAdmin() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.25fr 0.75fr', gap: '2rem', alignItems: 'start' }}>
+      <div className="admin-two-col-grid" style={{ alignItems: 'start' }}>
         {/* Left: form */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
@@ -239,6 +242,24 @@ export default function SettingsAdmin() {
                 </h3>
                 <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Edit the code terminal, headings, and feature cards shown in your About section</span>
               </div>
+              <Link
+                to="/admin/about"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.45rem 0.9rem',
+                  borderRadius: 8,
+                  background: 'rgba(56, 189, 248, 0.12)',
+                  border: '1px solid rgba(56, 189, 248, 0.3)',
+                  color: '#0284c7',
+                  fontWeight: 700,
+                  fontSize: '0.8rem',
+                  textDecoration: 'none',
+                }}
+              >
+                Open Live Card Editor ↗
+              </Link>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -248,11 +269,15 @@ export default function SettingsAdmin() {
                   // Terminal Code Window: developer.config.ts
                 </span>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div className="admin-form-two-col" style={{ gap: '0.75rem' }}>
+                    <Field label="Card Tab Filename" k="terminalFilename" placeholder="developer.config.ts" />
+                    <Field label="Card Version" k="terminalVersion" placeholder="v2.5.0" />
+                  </div>
+                  <div className="admin-form-two-col" style={{ gap: '0.75rem' }}>
                     <Field label="Terminal Name" k="terminalName" placeholder="Ananthkumar Srilambotharasarma" />
                     <Field label="Terminal Role" k="terminalRole" placeholder="Fullstack Developer" />
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div className="admin-form-two-col" style={{ gap: '0.75rem' }}>
                     <Field label="Terminal Location" k="terminalLocation" placeholder="Global Remote" />
                     <Field label="Terminal Status" k="terminalStatus" placeholder="Building scalable web applications" />
                   </div>

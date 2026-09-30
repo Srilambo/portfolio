@@ -14,6 +14,8 @@ export default function About({ settings }: { settings: any }) {
     .map((s: string) => s.trim())
     .filter(Boolean);
   const status = settings?.terminalStatus || 'Building scalable web applications';
+  const terminalFilename = settings?.terminalFilename || 'developer.config.ts';
+  const terminalVersion = settings?.terminalVersion || 'v2.5.0';
   const heading = settings?.aboutHeading || 'Architecting High-Performance Web Applications';
 
   const pillars = [
@@ -75,9 +77,9 @@ export default function About({ settings }: { settings: any }) {
                 <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#10b981' }} />
               </div>
               <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                developer.config.ts
+                {terminalFilename}
               </span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--accent)', fontWeight: 600 }}>v2.5.0</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--accent)', fontWeight: 600 }}>{terminalVersion}</span>
             </div>
 
             {/* Code Body */}
