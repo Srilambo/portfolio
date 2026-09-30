@@ -9,13 +9,21 @@ import { z } from 'zod';
 import { Schema, model, Model, Document } from 'mongoose';
 
 // ── Inline DB connection ────────────────────────────────────
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/portfolio';
-let isConnected = false;
+const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/portfolio';
+let cachedPromise: Promise<typeof mongoose> | null = null;
 
 async function connectDB(): Promise<void> {
-  if (isConnected && mongoose.connection.readyState === 1) return;
-  await mongoose.connect(MONGODB_URI, { serverSelectionTimeoutMS: 8000, bufferCommands: false });
-  isConnected = true;
+  if (mongoose.connection.readyState === 1) return;
+  if (!cachedPromise) {
+    cachedPromise = mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 10000,
+    }).catch(err => {
+      cachedPromise = null;
+      console.error('MongoDB connect error:', err);
+      throw err;
+    });
+  }
+  await cachedPromise;
 }
 
 // ── Inline Schemas ──────────────────────────────────────────
@@ -162,12 +170,14 @@ app.get('/api/github', async (_req, res) => {
 
 // ── Public Data ─────────────────────────────────────────────
 async function getDataStore(key: string) {
+  await connectDB();
   const doc = await DataStore.findOne({ key }).lean();
   return doc ? JSON.parse(doc.value) : null;
 }
 
 app.get('/api/data', async (_req, res) => {
   try {
+    await connectDB();
     const settingsRows = await Setting.find().lean();
     const settings = Object.fromEntries(settingsRows.map(r => [r.key, r.value]));
     const [projects, skills, experience, blogs, services, reviews] = await Promise.all([
@@ -181,8 +191,13 @@ app.get('/api/data', async (_req, res) => {
 });
 
 app.get('/api/settings', async (_req, res) => {
-  try { const rows = await Setting.find().lean(); res.json(Object.fromEntries(rows.map(r => [r.key, r.value]))); }
-  catch { res.status(500).json({ error: 'Failed to fetch settings' }); }
+  try {
+    await connectDB();
+    const rows = await Setting.find().lean();
+    res.json(Object.fromEntries(rows.map(r => [r.key, r.value])));
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch settings' });
+  }
 });
 
 // ── Reviews (public) ────────────────────────────────────────
@@ -224,6 +239,7 @@ app.put('/api/admin/data/:key', async (req, res) => {
 });
 
 async function setDataStore(key: string, value: unknown) {
+  await connectDB();
   await DataStore.findOneAndUpdate({ key }, { key, value: JSON.stringify(value) }, { upsert: true, new: true });
 }
 

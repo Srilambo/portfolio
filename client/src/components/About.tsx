@@ -17,31 +17,13 @@ export default function About({ settings }: { settings: any }) {
     <section id="about" ref={ref} className="section-wrapper" style={{ position: 'relative' }}>
       <div className="responsive-grid-2" style={{ alignItems: 'center' }}>
         
-        {/* Left Side: Photo + Interactive Code Window */}
+        {/* Left Side: Interactive Code Window */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={isVisible ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.8 }}
           style={{ position: 'relative' }}
         >
-          {settings?.aboutImageUrl && (
-            <div 
-              style={{ 
-                marginBottom: '1.25rem', 
-                borderRadius: '1.25rem', 
-                overflow: 'hidden', 
-                border: '1px solid rgba(255,255,255,0.1)',
-                boxShadow: '0 12px 30px rgba(0,0,0,0.5)',
-                maxHeight: 280
-              }}
-            >
-              <img 
-                src={settings.aboutImageUrl} 
-                alt={`${name} About`} 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-              />
-            </div>
-          )}
           <div
             className="glass-card"
             style={{
@@ -155,6 +137,46 @@ export default function About({ settings }: { settings: any }) {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Download CV Action Button */}
+          <div style={{ marginTop: '2rem' }}>
+            <a 
+              href={settings?.cvUrl || '#contact'} 
+              download={settings?.cvUrl && settings.cvUrl.startsWith('data:') ? `${settings?.name || 'Srilambo'}_CV.pdf` : undefined}
+              target={settings?.cvUrl && !settings.cvUrl.startsWith('data:') ? '_blank' : undefined}
+              rel={settings?.cvUrl && !settings.cvUrl.startsWith('data:') ? 'noopener noreferrer' : undefined}
+              style={{ textDecoration: 'none', display: 'inline-block' }}
+            >
+              <button
+                style={{ 
+                  background: 'var(--gradient)', 
+                  color: '#020617', 
+                  padding: '0.95rem 2.25rem', 
+                  borderRadius: '9999px', 
+                  border: 'none', 
+                  fontWeight: 800, 
+                  fontSize: '0.95rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 25px rgba(56, 189, 248, 0.4)',
+                  transition: 'all 0.3s ease',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.6rem'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(56, 189, 248, 0.6)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(56, 189, 248, 0.4)';
+                }}
+              >
+                <span>Download CV</span>
+                <span>📄</span>
+              </button>
+            </a>
           </div>
         </motion.div>
 

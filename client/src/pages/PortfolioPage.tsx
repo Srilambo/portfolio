@@ -52,7 +52,18 @@ export default function PortfolioPage() {
         sessionStorage.setItem('portfolio_cached_data', JSON.stringify(d));
       } catch (_) {}
     } catch (err: any) {
-      if (!data) setError(err.message);
+      console.warn('API fetch warning, using defaults:', err.message);
+      if (!data) {
+        setData({
+          settings: {},
+          projects: defaultProjects,
+          skills: defaultSkills,
+          experience: defaultExperience,
+          blogs: [],
+          services: [],
+          reviews: []
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -133,7 +144,8 @@ export default function PortfolioPage() {
           <main>
             <Hero settings={settings} />
             <About settings={settings} />
-            <Services settings={settings} services={services} />
+            {/* Hidden: Services section (CV button moved to About section) */}
+            {/* <Services settings={settings} services={services} /> */}
             <Skills skills={activeSkills} />
             <Projects projects={activeProjects} />
             <Experience experience={activeExperience} />
