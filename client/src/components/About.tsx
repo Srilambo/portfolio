@@ -114,15 +114,26 @@ export default function About({ settings }: { settings: any }) {
           </div>
 
           {/* Download CV Action Button under code terminal */}
-          <div style={{ marginTop: '1.5rem', display: 'flex' }}>
+          <div style={{ marginTop: '1.75rem', display: 'flex', alignItems: 'center' }}>
             {(() => {
+              const hasCustomCv = !!settings?.cvUrl;
+              const isDocx =
+                settings?.cvFilename?.endsWith('.docx') ||
+                settings?.cvFilename?.endsWith('.doc') ||
+                settings?.cvUrl?.includes('word');
+              const fileExt = isDocx ? 'DOCX' : 'PDF';
+              const badgeColor = isDocx ? '#38bdf8' : '#ef4444';
+              const badgeBg = isDocx ? 'rgba(56, 189, 248, 0.15)' : 'rgba(239, 68, 68, 0.15)';
+              const badgeBorder = isDocx ? 'rgba(56, 189, 248, 0.35)' : 'rgba(239, 68, 68, 0.35)';
+
               const getCvDownloadFilename = () => {
                 if (!settings?.cvUrl) return undefined;
                 if (settings?.cvFilename) return settings.cvFilename;
                 const baseName = (settings?.name || 'Srilambo').replace(/\s+/g, '_');
                 const url = settings.cvUrl;
                 if (url.startsWith('data:')) {
-                  if (url.includes('wordprocessingml') || url.includes('officedocument') || url.includes('docx')) return `${baseName}_CV.docx`;
+                  if (url.includes('wordprocessingml') || url.includes('officedocument') || url.includes('docx'))
+                    return `${baseName}_CV.docx`;
                   if (url.includes('msword') || url.includes('doc')) return `${baseName}_CV.doc`;
                   if (url.includes('pdf')) return `${baseName}_CV.pdf`;
                   return `${baseName}_CV`;
@@ -130,48 +141,218 @@ export default function About({ settings }: { settings: any }) {
                 return undefined;
               };
 
+              const handleCvClick = (e: React.MouseEvent) => {
+                if (!hasCustomCv) {
+                  e.preventDefault();
+                  const win = window.open('', '_blank');
+                  if (!win) return;
+                  const email = settings?.email || 'srilambotharan@gmail.com';
+                  const phone = settings?.phone || '+94770850239';
+                  const github = settings?.github || 'https://github.com/srilambo';
+                  const linkedin = settings?.linkedin || 'https://linkedin.com/in/srilambo';
+                  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>${name} - CV Resume</title>
+  <style>
+    @page { size: A4; margin: 15mm; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; color: #0f172a; line-height: 1.6; max-width: 820px; margin: 0 auto; padding: 24px; }
+    .header { border-bottom: 3px solid #0284c7; padding-bottom: 18px; margin-bottom: 22px; }
+    h1 { margin: 0; font-size: 28px; color: #0f172a; font-weight: 800; letter-spacing: -0.02em; }
+    .title { font-size: 17px; color: #0284c7; font-weight: 700; margin-top: 4px; }
+    .meta { font-size: 13px; color: #475569; margin-top: 6px; }
+    .section { margin-bottom: 24px; }
+    .section-title { font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: #0284c7; font-weight: 800; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 12px; }
+    .bio { font-size: 14.5px; color: #334155; }
+    .stack-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; padding: 4px 10px; font-size: 12.5px; font-weight: 600; color: #0369a1; }
+    .btn-bar { margin-bottom: 24px; padding: 12px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .print-btn { background: #0284c7; color: #fff; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; }
+    @media print { .btn-bar { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="btn-bar">
+    <span>📄 <strong>${name} — Curriculum Vitae (PDF)</strong></span>
+    <button class="print-btn" onclick="window.print()">🖨️ Save as PDF / Print</button>
+  </div>
+  <div class="header">
+    <h1>${name}</h1>
+    <div class="title">${role}</div>
+    <div class="meta">${location} • ${email} • ${phone}</div>
+    <div class="meta">${github} • ${linkedin}</div>
+  </div>
+  <div class="section">
+    <div class="section-title">Professional Summary</div>
+    <div class="bio">${bio}</div>
+  </div>
+  <div class="section">
+    <div class="section-title">Core Technical Stack</div>
+    <div class="stack-tags">
+      ${stack.map((s: string) => `<span class="tag">${s}</span>`).join('')}
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">Status & Engineering Focus</div>
+    <div class="bio">${status}</div>
+  </div>
+  <script>
+    window.onload = function() { setTimeout(function() { window.print(); }, 500); };
+  </script>
+</body>
+</html>`;
+                  win.document.write(html);
+                  win.document.close();
+                }
+              };
+
               const downloadName = getCvDownloadFilename();
 
               return (
-                <a 
-                  href={settings?.cvUrl || '#contact'} 
+                <a
+                  href={settings?.cvUrl || '#'}
+                  onClick={handleCvClick}
                   download={downloadName}
                   target={settings?.cvUrl && !settings.cvUrl.startsWith('data:') ? '_blank' : undefined}
                   rel={settings?.cvUrl && !settings.cvUrl.startsWith('data:') ? 'noopener noreferrer' : undefined}
-                  style={{ textDecoration: 'none', display: 'inline-block' }}
+                  className="cv-download-btn"
+                  style={{
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '1rem',
+                    padding: '0.85rem 1.6rem',
+                    borderRadius: '16px',
+                    background:
+                      'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%)',
+                    border: '1px solid rgba(56, 189, 248, 0.35)',
+                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(56, 189, 248, 0.15)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    overflow: 'hidden',
+                  }}
                 >
-                  <button
-                style={{ 
-                  background: 'var(--gradient)', 
-                  color: '#020617', 
-                  padding: '0.95rem 2.25rem', 
-                  borderRadius: '9999px', 
-                  border: 'none', 
-                  fontWeight: 800, 
-                  fontSize: '0.95rem',
-                  cursor: 'pointer',
-                  boxShadow: '0 8px 25px rgba(56, 189, 248, 0.4)',
-                  transition: 'all 0.3s ease',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.6rem'
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(56, 189, 248, 0.6)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(56, 189, 248, 0.4)';
-                }}
-              >
-                <span>Download CV</span>
-                <span>📄</span>
-              </button>
-            </a>
-          );
-        })()}
-      </div>
+                  {/* PDF / Document Sheet Badge */}
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 12,
+                      background: badgeBg,
+                      border: `1px solid ${badgeBorder}`,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      boxShadow: `0 0 15px ${badgeBg}`,
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: '0.65rem',
+                        fontWeight: 900,
+                        color: badgeColor,
+                        letterSpacing: '0.05em',
+                        lineHeight: 1,
+                      }}
+                    >
+                      {fileExt}
+                    </span>
+                    <svg
+                      style={{ width: 16, height: 16, color: badgeColor, marginTop: 2 }}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                  </div>
+
+                  {/* Label & Details */}
+                  <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span
+                        style={{
+                          fontSize: '0.98rem',
+                          fontWeight: 800,
+                          color: '#f8fafc',
+                          letterSpacing: '-0.01em',
+                        }}
+                      >
+                        Download CV
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '0.62rem',
+                          fontWeight: 800,
+                          padding: '0.15rem 0.5rem',
+                          borderRadius: 99,
+                          background: 'rgba(56, 189, 248, 0.15)',
+                          color: '#38bdf8',
+                          border: '1px solid rgba(56, 189, 248, 0.3)',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {fileExt}
+                      </span>
+                    </div>
+                    <span
+                      style={{
+                        fontSize: '0.72rem',
+                        color: '#94a3b8',
+                        marginTop: 2,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {settings?.cvFilename || 'Curriculum Vitae • Verified'}
+                    </span>
+                  </div>
+
+                  {/* Download Action Arrow with Glowing Circle */}
+                  <div
+                    className="cv-arrow-circle"
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: '50%',
+                      background: 'var(--gradient)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#020617',
+                      marginLeft: '0.5rem',
+                      flexShrink: 0,
+                      boxShadow: '0 0 15px rgba(56, 189, 248, 0.4)',
+                      transition: 'transform 0.25s ease',
+                    }}
+                  >
+                    <svg
+                      style={{ width: 17, height: 17 }}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2.5}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      />
+                    </svg>
+                  </div>
+                </a>
+              );
+            })()}
+          </div>
 
           {/* Background Ambient Glow */}
           <div
